@@ -77,11 +77,13 @@ jobs:
     if: inputs.platform == 'android'
     runs-on: ubuntu-latest
     steps:
-      - run: echo "TODO: Android build & deploy"
+      - run: |
+          echo "TODO: Android build & deploy"
 
   deploy-ios:
     if: inputs.platform == 'ios'
     # Switch to macos-latest when the iOS build is filled in.
     runs-on: ubuntu-latest
     steps:
-      - run: echo "TODO: iOS build & deploy"
+      - run: |
+          echo "TODO: iOS build & deploy"
