@@ -232,7 +232,7 @@ function renderAbout(rootEl, paragraphs, labels) {
   rootEl.appendChild(content);
 }
 
-const DATA_ORIGIN = 'https://resume-data.danielchi0716.workers.dev';
+const DATA_ORIGIN = window.RESUME_CONFIG.dataOrigin;
 const DATA_BASE_URL = `${DATA_ORIGIN}/data`;
 
 async function fetchJson(url) {
