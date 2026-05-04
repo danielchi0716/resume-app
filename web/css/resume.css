@@ -109,6 +109,14 @@ body.error {
   padding: 40px 48px;
 }
 
+.version-footer {
+  padding: 0 48px 16px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: #aaa;
+  text-align: right;
+}
+
 .section {
   margin-bottom: 36px;
 }

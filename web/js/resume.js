@@ -225,6 +225,10 @@ function renderLanguages(rootEl, languages, labels) {
   });
 }
 
+function renderVersion(rootEl) {
+  rootEl.textContent = `v${window.RESUME_CONFIG.version}`;
+}
+
 function renderAbout(rootEl, paragraphs, labels) {
   renderSectionTitle(rootEl, labels.sections.about);
   const content = el('div', 'about-content');
@@ -266,6 +270,7 @@ async function loadResume(lang) {
     renderEducation(document.querySelector('#education'), education, labels);
     renderLanguages(document.querySelector('#languages'), languages, labels);
     renderAbout(document.querySelector('#about'), about, labels);
+    renderVersion(document.querySelector('#version-footer'));
 
     document.body.classList.add('rendered');
   } catch (err) {
