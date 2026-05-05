@@ -1,5 +1,7 @@
 package com.danielchi0716.resume.core
 
+import com.danielchi0716.resume.core.model.Period
+import com.danielchi0716.resume.core.model.YearMonth
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -110,6 +112,31 @@ private fun LocaleButton(label: String, selected: Boolean, onClick: () -> Unit) 
     }
 }
 
+private val EN_MONTH_SHORT = listOf(
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+)
+
+private fun formatYearMonth(ym: YearMonth, locale: String): String =
+    if (locale == "tc") "${ym.year}/${ym.month.toString().padStart(2, '0')}"
+    else "${EN_MONTH_SHORT[ym.month - 1]} ${ym.year}"
+
+private fun formatPeriod(period: Period, locale: String): String {
+    val start = period.start
+    val end = period.end
+    val startsInJan = start.month == 1
+    val endsInDec = end != null && end.month == 12
+    if (startsInJan && (endsInDec || end == null)) {
+        return when {
+            end == null || start.year == end.year -> "${start.year}"
+            else -> "${start.year} ─ ${end.year}"
+        }
+    }
+    val present = if (locale == "tc") "至今" else "Present"
+    val endLabel = end?.let { formatYearMonth(it, locale) } ?: present
+    return "${formatYearMonth(start, locale)} ─ $endLabel"
+}
+
 private suspend fun fetchSummary(locale: String): String {
     val s = ResumeCore.service()
     val sb = StringBuilder()
@@ -128,7 +155,7 @@ private suspend fun fetchSummary(locale: String): String {
 
     val work = s.getWorkExperience(locale)
     sb.appendLine("=== WorkExperience (${work.size}) ===")
-    work.forEach { sb.appendLine("- ${it.company} (${it.period.display}), projects=${it.projects.size}") }
+    work.forEach { sb.appendLine("- ${it.company} (${formatPeriod(it.period, locale)}), projects=${it.projects.size}") }
     sb.appendLine()
 
     val side = s.getSideProjects(locale)

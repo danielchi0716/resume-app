@@ -12,7 +12,6 @@ import com.danielchi0716.resume.core.model.Meta
 import com.danielchi0716.resume.core.model.Period
 import com.danielchi0716.resume.core.model.Photo
 import com.danielchi0716.resume.core.model.Project
-import com.danielchi0716.resume.core.model.SectionLabels
 import com.danielchi0716.resume.core.model.SideProject
 import com.danielchi0716.resume.core.model.Skill
 import com.danielchi0716.resume.core.model.SkillSubcategory
@@ -25,7 +24,6 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 internal fun PeriodBean.toModel() = Period(
-    display = display,
     start = YearMonth.parse(start),
     end = end?.let(YearMonth::parse),
 )
@@ -56,19 +54,8 @@ internal fun HeaderBean.toModel() = Header(
     contacts = contacts.map { it.toModel() },
 )
 
-internal fun SectionLabelsBean.toModel() = SectionLabels(
-    workExperience = workExperience,
-    sideProjects = sideProjects,
-    technicalSkills = technicalSkills,
-    education = education,
-    languages = languages,
-    about = about,
-)
-
 internal fun LabelsBean.toModel() = Labels(
     pageTitle = pageTitle,
-    projectsLabel = projectsLabel,
-    sections = sections.toModel(),
 )
 
 internal fun MetaBean.toModel() = Meta(

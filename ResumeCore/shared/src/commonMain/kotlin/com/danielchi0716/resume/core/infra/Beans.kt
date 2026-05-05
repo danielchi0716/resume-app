@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class PeriodBean(
-    val display: String,
     val start: String,
     val end: String? = null,
 )
@@ -38,20 +37,8 @@ internal data class HeaderBean(
 )
 
 @Serializable
-internal data class SectionLabelsBean(
-    val workExperience: String,
-    val sideProjects: String,
-    val technicalSkills: String,
-    val education: String,
-    val languages: String,
-    val about: String,
-)
-
-@Serializable
 internal data class LabelsBean(
     val pageTitle: String,
-    val projectsLabel: String,
-    val sections: SectionLabelsBean,
 )
 
 @Serializable

@@ -1,5 +1,30 @@
 'use strict';
 
+const UI_LABELS = {
+  tc: {
+    projectsLabel: '專案經歷 Projects',
+    sections: {
+      workExperience: '工作經歷 Work Experience',
+      sideProjects: '個人研究 Side Projects',
+      technicalSkills: '技術技能 Technical Skills',
+      education: '學歷 Education',
+      languages: '語言能力 Languages',
+      about: '自傳 About Me',
+    },
+  },
+  en: {
+    projectsLabel: 'Projects',
+    sections: {
+      workExperience: 'Work Experience',
+      sideProjects: 'Side Projects',
+      technicalSkills: 'Technical Skills',
+      education: 'Education',
+      languages: 'Languages',
+      about: 'About Me',
+    },
+  },
+};
+
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 const SVG_ICONS = {
@@ -43,8 +68,41 @@ function tagList(tags, wrapClass, itemClass) {
   return wrap;
 }
 
+const EN_MONTH_SHORT = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
+function parseYearMonth(s) {
+  if (!s) return null;
+  const [y, m] = s.split('-');
+  return { year: Number(y), month: Number(m) };
+}
+
+function formatYearMonth(ym, lang) {
+  if (lang === 'tc') return `${ym.year}/${String(ym.month).padStart(2, '0')}`;
+  return `${EN_MONTH_SHORT[ym.month - 1]} ${ym.year}`;
+}
+
 function periodLabel(period) {
-  return period && period.display ? period.display : '';
+  if (!period) return '';
+  const lang = document.documentElement.lang === 'zh-Hant' ? 'tc' : 'en';
+  const start = parseYearMonth(period.start);
+  const end = parseYearMonth(period.end);
+  if (!start) return '';
+
+  // Year-only display when start is January and end is either December or open-ended
+  const startsInJan = start.month === 1;
+  const endsInDec = end != null && end.month === 12;
+  if (startsInJan && (endsInDec || end == null)) {
+    if (end == null || start.year === end.year) return `${start.year}`;
+    return `${start.year} ─ ${end.year}`;
+  }
+
+  const present = lang === 'tc' ? '至今' : 'Present';
+  const startLabel = formatYearMonth(start, lang);
+  const endLabel = end ? formatYearMonth(end, lang) : present;
+  return `${startLabel} ─ ${endLabel}`;
 }
 
 function renderHeader(data) {
@@ -260,8 +318,8 @@ async function loadResume(lang) {
         fetchJson(`${base}/about.json`),
       ]);
 
-    const labels = meta.labels;
-    document.title = labels.pageTitle;
+    document.title = meta.labels.pageTitle;
+    const labels = UI_LABELS[lang];
 
     renderHeader(header);
     renderWorkExperience(document.querySelector('#work-experience'), workExperience, labels);

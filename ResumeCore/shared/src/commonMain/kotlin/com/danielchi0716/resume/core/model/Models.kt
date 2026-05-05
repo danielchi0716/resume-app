@@ -37,7 +37,6 @@ data class YearMonth(val year: Int, val month: Int) : Comparable<YearMonth> {
 }
 
 data class Period(
-    val display: String,
     val start: YearMonth,
     val end: YearMonth? = null,
 )
@@ -66,19 +65,8 @@ data class Header(
     val contacts: List<Contact>,
 )
 
-data class SectionLabels(
-    val workExperience: String,
-    val sideProjects: String,
-    val technicalSkills: String,
-    val education: String,
-    val languages: String,
-    val about: String,
-)
-
 data class Labels(
     val pageTitle: String,
-    val projectsLabel: String,
-    val sections: SectionLabels,
 )
 
 data class Meta(
