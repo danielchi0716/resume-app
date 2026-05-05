@@ -1,49 +1,165 @@
 package com.danielchi0716.resume.core
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
-import org.jetbrains.compose.resources.painterResource
-
-import resumecore.composeapp.generated.resources.Res
-import resumecore.composeapp.generated.resources.compose_multiplatform
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
+        TestScreen()
+    }
+}
+
+private sealed interface LoadState {
+    data object Idle : LoadState
+    data object Loading : LoadState
+    data class Success(val text: String) : LoadState
+    data class Error(val message: String) : LoadState
+}
+
+@Composable
+private fun TestScreen() {
+    var locale by remember { mutableStateOf("en") }
+    var state by remember { mutableStateOf<LoadState>(LoadState.Idle) }
+    val scope = rememberCoroutineScope()
+
+    Surface(
+        modifier = Modifier.fillMaxSize().safeContentPadding(),
+        color = MaterialTheme.colorScheme.background,
+    ) {
         Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                LocaleButton("EN", selected = locale == "en") { locale = "en" }
+                LocaleButton("TC", selected = locale == "tc") { locale = "tc" }
             }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
+
+            Button(
+                onClick = {
+                    scope.launch {
+                        state = LoadState.Loading
+                        state = runCatching { fetchSummary(locale) }
+                            .fold(
+                                onSuccess = { LoadState.Success(it) },
+                                onFailure = { LoadState.Error(it.toString()) },
+                            )
+                    }
+                },
+                enabled = state !is LoadState.Loading,
+            ) {
+                Text("Load ($locale)")
+            }
+
+            when (val s = state) {
+                LoadState.Idle -> Text("Press Load.")
+                LoadState.Loading -> CircularProgressIndicator()
+                is LoadState.Success -> Text(
+                    text = s.text,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 11.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                )
+                is LoadState.Error -> Text(
+                    text = s.message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                )
             }
         }
     }
+}
+
+@Composable
+private fun LocaleButton(label: String, selected: Boolean, onClick: () -> Unit) {
+    if (selected) {
+        Button(onClick = onClick) { Text(label) }
+    } else {
+        OutlinedButton(onClick = onClick) { Text(label) }
+    }
+}
+
+private suspend fun fetchSummary(locale: String): String {
+    val s = ResumeCore.service()
+    val sb = StringBuilder()
+    val meta = s.getMeta(locale)
+    sb.appendLine("=== Meta ===")
+    sb.appendLine("lang=${meta.lang} version=${meta.version} updatedAt=${meta.updatedAt}")
+    sb.appendLine("title=${meta.labels.pageTitle}")
+    sb.appendLine()
+
+    val header = s.getHeader(locale)
+    sb.appendLine("=== Header ===")
+    sb.appendLine("name=${header.name}")
+    sb.appendLine("subtitle=${header.subtitle}")
+    sb.appendLine("contacts=${header.contacts.size}")
+    sb.appendLine()
+
+    val work = s.getWorkExperience(locale)
+    sb.appendLine("=== WorkExperience (${work.size}) ===")
+    work.forEach { sb.appendLine("- ${it.company} (${it.period.display}), projects=${it.projects.size}") }
+    sb.appendLine()
+
+    val side = s.getSideProjects(locale)
+    sb.appendLine("=== SideProjects (${side.size}) ===")
+    side.forEach { sb.appendLine("- ${it.name}") }
+    sb.appendLine()
+
+    val skills = s.getSkills(locale)
+    sb.appendLine("=== Skills (${skills.size}) ===")
+    skills.forEach {
+        val label = when (it) {
+            is com.danielchi0716.resume.core.model.Skill.Platform -> "platform/${it.subcategories.size} subs"
+            is com.danielchi0716.resume.core.model.Skill.Category -> "category/${it.tags.size} tags"
+        }
+        sb.appendLine("- ${it.name} ($label)")
+    }
+    sb.appendLine()
+
+    val edu = s.getEducation(locale)
+    sb.appendLine("=== Education (${edu.size}) ===")
+    edu.forEach { sb.appendLine("- ${it.school} — ${it.major}") }
+    sb.appendLine()
+
+    val langs = s.getLanguages(locale)
+    sb.appendLine("=== Languages (${langs.size}) ===")
+    langs.forEach { sb.appendLine("- ${it.name}: ${it.level}") }
+    sb.appendLine()
+
+    val about = s.getAbout(locale)
+    sb.appendLine("=== About (${about.size} paragraphs) ===")
+    about.forEachIndexed { i, p -> sb.appendLine("[${i + 1}] ${p.take(80)}...") }
+
+    return sb.toString()
 }
