@@ -8,6 +8,8 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,12 +25,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.PhoneIphone
 import androidx.compose.material.icons.filled.PhotoLibrary
@@ -46,13 +50,20 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.danielchi0716.resume.core.BuildConfig
@@ -258,37 +269,18 @@ private fun CtaCard(resumeUrl: String) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 8.dp),
             )
-            Row(
+            KmpArchitectureBlock(
+                onClick = { runCatching { uri.openUri(REPO_URL) } },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                PlatformCard(
-                    label = "Android",
-                    desc = stringResource(R.string.platform_android_desc),
-                    icon = Icons.Filled.Android,
-                    enabled = true,
-                    onClick = { runCatching { uri.openUri(REPO_URL) } },
-                    modifier = Modifier.weight(1f),
-                )
-                PlatformCard(
-                    label = "iOS",
-                    desc = stringResource(R.string.platform_ios_desc),
-                    icon = Icons.Filled.PhoneIphone,
-                    enabled = true,
-                    onClick = { runCatching { uri.openUri(REPO_URL) } },
-                    modifier = Modifier.weight(1f),
-                )
-                PlatformCard(
-                    label = "Web",
-                    desc = stringResource(R.string.platform_web_desc),
-                    icon = Icons.Filled.Language,
-                    enabled = true,
-                    onClick = { runCatching { uri.openUri(resumeUrl) } },
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            )
+            WebRowCard(
+                onClick = { runCatching { uri.openUri(resumeUrl) } },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
+            )
             Text(
                 text = stringResource(R.string.cta_bridge),
                 style = MaterialTheme.typography.bodySmall,
@@ -301,56 +293,210 @@ private fun CtaCard(resumeUrl: String) {
 }
 
 @Composable
-private fun PlatformCard(
-    label: String,
-    desc: String,
-    icon: ImageVector,
-    enabled: Boolean,
-    onClick: (() -> Unit)?,
+private fun KmpArchitectureBlock(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val alpha = if (enabled) 1f else 0.55f
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainer,
-        contentColor = MaterialTheme.colorScheme.onSurface,
         shape = RoundedCornerShape(12.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = modifier
-            .height(112.dp)
-            .let { if (enabled && onClick != null) it.clickable { onClick() } else it },
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = modifier.clickable { onClick() },
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 14.dp, horizontal = 6.dp),
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 22.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Surface(
-                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = alpha),
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                shape = CircleShape,
-                modifier = Modifier.size(38.dp),
+                color = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                shape = RoundedCornerShape(8.dp),
+                shadowElevation = 2.dp,
             ) {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Icon(
-                        imageVector = icon,
+                        imageVector = Icons.Filled.Hub,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                     )
+                    Column {
+                        Text(
+                            text = "Kotlin Multiplatform",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 0.2.sp,
+                            ),
+                        )
+                        Text(
+                            text = "Shared Domain · Data · Networking",
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier
+                                .padding(top = 2.dp)
+                                .alpha(0.85f),
+                        )
+                    }
                 }
             }
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
-                fontWeight = FontWeight.Medium,
+            KmpConnectorCanvas(
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .padding(top = 6.dp),
             )
-            Text(
-                text = desc,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
-                textAlign = TextAlign.Center,
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+            ) {
+                PlatformCircle(
+                    icon = Icons.Filled.Android,
+                    label = "Android",
+                    desc = stringResource(R.string.platform_android_desc),
+                )
+                PlatformCircle(
+                    icon = Icons.Filled.PhoneIphone,
+                    label = "iOS",
+                    desc = stringResource(R.string.platform_ios_desc),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun KmpConnectorCanvas(
+    color: androidx.compose.ui.graphics.Color,
+    modifier: Modifier = Modifier,
+) {
+    Canvas(modifier = modifier) {
+        val w = size.width
+        val h = size.height
+        val centerX = w / 2f
+        // x=70 / x=250 in viewBox 320 → 21.875% / 78.125% — keeps the
+        // dashed lines aligned with the platform circles below
+        val leftX = w * (70f / 320f)
+        val rightX = w * (250f / 320f)
+        val midY = h * (14f / 40f)
+        val stroke = 1.5.dp.toPx()
+        val dotR = 3.5.dp.toPx()
+        val dash = floatArrayOf(3.dp.toPx(), 3.dp.toPx())
+        val effect = PathEffect.dashPathEffect(dash, 0f)
+
+        val leftPath = Path().apply {
+            moveTo(centerX, 0f)
+            lineTo(centerX, midY)
+            lineTo(leftX, midY)
+            lineTo(leftX, h)
+        }
+        val rightPath = Path().apply {
+            moveTo(centerX, 0f)
+            lineTo(centerX, midY)
+            lineTo(rightX, midY)
+            lineTo(rightX, h)
+        }
+        drawPath(leftPath, color, style = Stroke(width = stroke, pathEffect = effect))
+        drawPath(rightPath, color, style = Stroke(width = stroke, pathEffect = effect))
+        drawCircle(color, dotR, Offset(centerX, 0f))
+        drawCircle(color, dotR, Offset(leftX, h))
+        drawCircle(color, dotR, Offset(rightX, h))
+    }
+}
+
+@Composable
+private fun PlatformCircle(
+    icon: ImageVector,
+    label: String,
+    desc: String,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Surface(
+            color = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            shape = CircleShape,
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.outlineVariant),
+            modifier = Modifier.size(56.dp),
+        ) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                )
+            }
+        }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+            text = desc,
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun WebRowCard(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = modifier.clickable { onClick() },
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Surface(
+                color = MaterialTheme.colorScheme.tertiaryContainer,
+                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                shape = CircleShape,
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.outlineVariant),
+                modifier = Modifier.size(56.dp),
+            ) {
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    Icon(
+                        imageVector = Icons.Filled.Language,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                    )
+                }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Web",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = stringResource(R.string.platform_web_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp),
             )
         }
     }
