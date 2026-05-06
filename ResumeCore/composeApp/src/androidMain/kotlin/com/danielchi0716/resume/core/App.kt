@@ -52,7 +52,7 @@ import com.danielchi0716.resume.core.ui.theme.ThemeMode
 import com.danielchi0716.resume.core.ui.work.WorkScreen
 import kotlinx.coroutines.launch
 
-private const val ResumeUrl = "https://resume.danielchi0716.workers.dev/"
+private val ResumeUrl: String = BuildConfig.RESUME_SHARE_URL
 
 private enum class Tab(
     @param:StringRes val labelRes: Int,

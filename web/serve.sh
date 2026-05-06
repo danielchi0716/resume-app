@@ -10,6 +10,9 @@ set -euo pipefail
 PORT="${1:-8000}"
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 
+# Local dev marker — CI overrides this with the deploy version.
+RESUME_VERSION="${RESUME_VERSION:-local-dev}" "$ROOT/scripts/render-config.sh"
+
 echo "Serving $ROOT on http://localhost:$PORT"
 echo "  TC: http://localhost:$PORT/index.html"
 echo "  EN: http://localhost:$PORT/index_en.html"

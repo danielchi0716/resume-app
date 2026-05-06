@@ -1,5 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -9,6 +10,18 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
+
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+
+fun requireBuildConfig(key: String): String =
+    System.getenv(key)
+        ?: localProps.getProperty(key)
+        ?: throw GradleException(
+            "Missing required build config '$key'. Set it as an env var (CI) or in ResumeCore/local.properties (local).",
+        )
 
 kotlin {
     androidTarget {
@@ -57,6 +70,20 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField(
+            "String",
+            "RESUME_DATA_HOST",
+            "\"${requireBuildConfig("RESUME_DATA_HOST")}\"",
+        )
+        buildConfigField(
+            "String",
+            "RESUME_SHARE_URL",
+            "\"${requireBuildConfig("RESUME_SHARE_URL")}\"",
+        )
+    }
+    buildFeatures {
+        buildConfig = true
     }
     packaging {
         resources {

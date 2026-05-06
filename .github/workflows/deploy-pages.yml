@@ -47,12 +47,11 @@ jobs:
           echo "Computed version: ${VERSION}"
           echo "Tag: ${TAG}"
 
-      - name: Inject version into config.js
-        run: |
-          {
-            echo ""
-            echo "window.RESUME_CONFIG.version = '${{ steps.version.outputs.version }}';"
-          } >> web/js/config.js
+      - name: Render config.js from template
+        env:
+          RESUME_DATA_HOST: ${{ vars.RESUME_DATA_HOST }}
+          RESUME_VERSION: ${{ steps.version.outputs.version }}
+        run: ./web/scripts/render-config.sh
 
       - uses: actions/configure-pages@v5
 
