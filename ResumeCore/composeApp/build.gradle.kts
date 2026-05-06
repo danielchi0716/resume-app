@@ -23,6 +23,9 @@ fun requireBuildConfig(key: String): String =
             "Missing required build config '$key'. Set it as an env var (CI) or in ResumeCore/local.properties (local).",
         )
 
+fun optionalConfig(key: String): String? =
+    System.getenv(key) ?: localProps.getProperty(key)
+
 kotlin {
     androidTarget {
         compilerOptions {
@@ -68,8 +71,8 @@ android {
         applicationId = "com.danielchi0716.resume.core"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = optionalConfig("ANDROID_VERSION_CODE")?.toIntOrNull() ?: 1
+        versionName = optionalConfig("ANDROID_VERSION_NAME") ?: "1.0-local"
 
         buildConfigField(
             "String",
@@ -90,9 +93,27 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    signingConfigs {
+        create("release") {
+            val storePath = optionalConfig("ANDROID_KEYSTORE_PATH")
+            val storePw = optionalConfig("ANDROID_KEYSTORE_PASSWORD")
+            val alias = optionalConfig("ANDROID_KEY_ALIAS")
+            val keyPw = optionalConfig("ANDROID_KEY_PASSWORD")
+            if (storePath != null && storePw != null && alias != null && keyPw != null) {
+                storeFile = file(storePath)
+                storePassword = storePw
+                keyAlias = alias
+                keyPassword = keyPw
+            }
+        }
+    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            val sc = signingConfigs.getByName("release")
+            if (sc.storeFile != null) {
+                signingConfig = sc
+            }
         }
     }
     compileOptions {
