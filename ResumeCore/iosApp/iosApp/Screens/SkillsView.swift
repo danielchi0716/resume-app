@@ -78,9 +78,7 @@ private struct IntroCard: View {
                 Text(L10n.titleSkills)
                     .font(HIGType.headline)
                     .foregroundColor(hig.label)
-                Text(L10n.isChinese
-                     ? "\(skills.count) 個領域 · \(totalCount) 項技術"
-                     : "\(skills.count) areas · \(totalCount) skills")
+                Text(L10n.skillsSummary(skills.count, totalCount))
                     .font(HIGType.footnote)
                     .foregroundColor(hig.secondaryLabel)
             }

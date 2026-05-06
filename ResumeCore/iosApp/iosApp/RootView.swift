@@ -61,6 +61,11 @@ struct RootView: View {
             Button(L10n.themeLight) { setTheme(.light) }
             Button(L10n.themeDark) { setTheme(.dark) }
             Button(L10n.themeSystem) { setTheme(.system) }
+            Button(L10n.openSettings) {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
             Button(L10n.openWeb) {
                 if let url = URL(string: AppConfig.resumeShareUrl) {
                     UIApplication.shared.open(url)

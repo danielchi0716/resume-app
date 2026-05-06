@@ -9,7 +9,7 @@ private let enMonths = [
 enum PeriodFormatter {
 
     static func format(_ period: Period) -> String {
-        let useChinese = L10n.isChinese
+        let useChinese = AppLocale.isChinese
         let start = period.start
         let end = period.end
         let startsInJan = start.month == 1

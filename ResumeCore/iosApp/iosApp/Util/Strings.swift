@@ -1,14 +1,20 @@
 import Foundation
 
+/// User-resolved app locale, honoring iOS per-app language (Settings > [App] > Language).
+/// Reads from `Bundle.main.preferredLocalizations`, which is the bundle's resolved
+/// localization for the user — exactly what NSLocalizedString uses to pick strings.
 enum AppLocale: String {
     case zh
     case en
 
     static var current: AppLocale {
-        let langs = Locale.preferredLanguages.first ?? ""
-        return langs.lowercased().hasPrefix("zh") ? .zh : .en
+        let lang = (Bundle.main.preferredLocalizations.first ?? "en").lowercased()
+        return lang.hasPrefix("zh") ? .zh : .en
     }
 
+    static var isChinese: Bool { current == .zh }
+
+    /// Mapping to the shared module's content locale (data origin folder key).
     var sharedLocaleCode: String {
         switch self {
         case .zh: return "tc"
@@ -17,82 +23,93 @@ enum AppLocale: String {
     }
 }
 
+private func tr(_ key: String) -> String {
+    NSLocalizedString(key, comment: "")
+}
+
+private func trf(_ key: String, _ args: CVarArg...) -> String {
+    String(format: NSLocalizedString(key, comment: ""), arguments: args)
+}
+
+/// Localized strings — every accessor goes through `Localizable.xcstrings`.
+/// The active language is whatever iOS picks from the user's per-app or
+/// system language settings; this enum doesn't make that decision.
 enum L10n {
-    static let isChinese = AppLocale.current == .zh
-
-    private static func t(_ zh: String, _ en: String) -> String {
-        isChinese ? zh : en
-    }
-
     // Tab labels
-    static var tabProfile: String  { t("個人", "Profile") }
-    static var tabWork: String     { t("經歷", "Work") }
-    static var tabSkills: String   { t("技能", "Skills") }
-    static var tabMore: String     { t("更多", "More") }
+    static var tabProfile: String { tr("tab.profile") }
+    static var tabWork:    String { tr("tab.work") }
+    static var tabSkills:  String { tr("tab.skills") }
+    static var tabMore:    String { tr("tab.more") }
 
     // Nav titles
-    static var titleProfile: String { t("個人資料", "Profile") }
-    static var titleWork: String    { t("工作經歷", "Work") }
-    static var titleSkills: String  { t("專業技能", "Skills") }
-    static var titleMore: String    { t("更多",     "More") }
+    static var titleProfile: String { tr("nav.profile") }
+    static var titleWork:    String { tr("nav.work") }
+    static var titleSkills:  String { tr("nav.skills") }
+    static var titleMore:    String { tr("nav.more") }
 
     // Sections
-    static var sectionAbout: String        { t("關於",      "About") }
-    static var sectionLanguages: String    { t("語言能力",  "Languages") }
-    static var sectionEducation: String    { t("學歷",      "Education") }
-    static var sectionWork: String         { t("工作經歷",  "Experience") }
-    static var sectionMainProjects: String { t("主要專案",  "Key Projects") }
-    static var sectionSideProjects: String { t("個人專案",  "Side Projects") }
-    static var sectionContact: String      { t("聯絡我 · Get in Touch", "Get in Touch") }
+    static var sectionAbout:        String { tr("section.about") }
+    static var sectionLanguages:    String { tr("section.languages") }
+    static var sectionEducation:    String { tr("section.education") }
+    static var sectionWork:         String { tr("section.work") }
+    static var sectionMainProjects: String { tr("section.main_projects") }
+    static var sectionSideProjects: String { tr("section.side_projects") }
+    static var sectionContact:      String { tr("section.contact") }
 
     // Stats
-    static var statTotalYears: String { t("總年資", "Years") }
-    static var statCompanies: String  { t("間公司", "Companies") }
-    static var statProjects: String   { t("主要專案", "Projects") }
+    static var statTotalYears: String { tr("stat.total_years") }
+    static var statCompanies:  String { tr("stat.companies") }
+    static var statProjects:   String { tr("stat.projects") }
 
     // Work
-    static var actionViewDetail: String { t("查看詳細", "View detail") }
-    static var workDetailTitle: String  { t("工作經歷", "Work") }
-    static var swipeHint: String        { t("左右滑動切換", "Swipe to switch") }
+    static var actionViewDetail: String { tr("work.view_detail") }
+    static var workDetailTitle:  String { tr("work.detail_title") }
+    static var swipeHint:        String { tr("work.swipe_hint") }
 
     // Period
-    static var present: String      { t("至今", "Present") }
+    static var present: String { tr("period.present") }
     static func durationYearsMonths(_ y: Int, _ m: Int) -> String {
-        isChinese ? "\(y) 年 \(m) 個月" : "\(y)y \(m)m"
+        trf("duration.years_months", y, m)
     }
-    static func durationYears(_ y: Int) -> String  { isChinese ? "\(y) 年" : "\(y)y" }
-    static func durationMonths(_ m: Int) -> String { isChinese ? "\(m) 個月" : "\(m)m" }
+    static func durationYears(_ y: Int) -> String  { trf("duration.years", y) }
+    static func durationMonths(_ m: Int) -> String { trf("duration.months", m) }
 
     // CTA
-    static var ctaThanks: String   { t("感謝閱讀到這裡", "Thanks for reading") }
-    static var ctaSubtitle: String { t("一份內容、三個平台。Android 與 iOS 共用 KMP 核心，Web 各自獨立呈現。",
-                                       "Three platforms, one resume — Android and iOS share a KMP core, Web stands alone.") }
-    static var ctaBridge: String   { t("想進一步交流？任選一個方式聯絡我 ↓", "Want to chat? Pick a channel below ↓") }
+    static var ctaThanks:   String { tr("cta.thanks") }
+    static var ctaSubtitle: String { tr("cta.subtitle") }
+    static var ctaBridge:   String { tr("cta.bridge") }
 
-    static var platformAndroid: String { t("Android", "Android") }
-    static var platformIOS: String     { t("iOS",     "iOS") }
-    static var platformWeb: String     { t("Web",     "Web") }
-    static var platformWebDesc: String { t("響應式網頁版", "Responsive web") }
+    // Platforms
+    static var platformAndroid: String { tr("platform.android") }
+    static var platformIOS:     String { tr("platform.ios") }
+    static var platformWeb:     String { tr("platform.web") }
+    static var platformWebDesc: String { tr("platform.web_desc") }
 
     // Action sheet
-    static var sheetTitle: String  { t("外觀與選項", "Appearance") }
-    static var themeLight: String  { t("淺色 Light", "Light") }
-    static var themeDark: String   { t("深色 Dark", "Dark") }
-    static var themeSystem: String { t("跟隨系統", "Follow system") }
-    static var openWeb: String     { t("Web 版本", "Web version") }
-    static var cancel: String      { t("取消", "Cancel") }
+    static var sheetTitle:   String { tr("sheet.title") }
+    static var themeLight:   String { tr("theme.light") }
+    static var themeDark:    String { tr("theme.dark") }
+    static var themeSystem:  String { tr("theme.system") }
+    static var openWeb:      String { tr("sheet.open_web") }
+    static var openSettings: String { tr("sheet.open_settings") }
+    static var cancel:       String { tr("sheet.cancel") }
 
     // Contacts
-    static var labelEmail: String    { t("Email", "Email") }
-    static var labelPhone: String    { t("電話",  "Phone") }
-    static var labelGithub: String   { t("GitHub","GitHub") }
-    static var labelLinkedin: String { t("LinkedIn","LinkedIn") }
+    static var labelEmail:    String { tr("contact.email") }
+    static var labelPhone:    String { tr("contact.phone") }
+    static var labelGithub:   String { tr("contact.github") }
+    static var labelLinkedin: String { tr("contact.linkedin") }
 
     // Loading / error
-    static var errorTitle: String { t("載入失敗", "Failed to load") }
-    static var errorRetry: String { t("重試", "Retry") }
-    static var loading: String    { t("載入中…", "Loading…") }
+    static var errorTitle: String { tr("error.title") }
+    static var errorRetry: String { tr("error.retry") }
+    static var loading:    String { tr("state.loading") }
 
     // Footer
-    static var footerNote: String { "Made with HIG · iOS 26 Liquid Glass" }
+    static var footerNote: String { tr("footer.note") }
+
+    // Skills summary (count + count)
+    static func skillsSummary(_ areas: Int, _ skills: Int) -> String {
+        trf("skills.summary", areas, skills)
+    }
 }
