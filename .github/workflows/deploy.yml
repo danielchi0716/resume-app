@@ -1,0 +1,227 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.compute.outputs.version }}
+      tag: ${{ steps.compute.outputs.tag }}
+      version_code: ${{ steps.compute.outputs.version_code }}
+      previous_tag: ${{ steps.compute.outputs.previous_tag }}
+      build_time: ${{ steps.compute.outputs.build_time }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # git rev-list --count and git describe need the full history.
+          fetch-depth: 0
+
+      - id: compute
+        run: |
+          DATE=$(TZ='Asia/Taipei' date +'%Y.%m.%d')
+          SHA=$(git rev-parse --short HEAD)
+          VERSION="${DATE}-${SHA}"
+          TAG="v${VERSION}"
+          VERSION_CODE=$(git rev-list --count HEAD)
+          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
+          BUILD_TIME=$(TZ='Asia/Taipei' date +'%Y-%m-%d %H:%M %Z')
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "version_code=${VERSION_CODE}" >> "$GITHUB_OUTPUT"
+          echo "previous_tag=${PREV_TAG}" >> "$GITHUB_OUTPUT"
+          echo "build_time=${BUILD_TIME}" >> "$GITHUB_OUTPUT"
+          echo "Computed version: ${VERSION}"
+          echo "Tag: ${TAG}"
+          echo "Version code: ${VERSION_CODE}"
+          echo "Previous tag: ${PREV_TAG:-(none)}"
+          echo "Build time: ${BUILD_TIME}"
+
+  # ----- Build phase -----
+  # Each platform produces an artifact (Pages tarball / APK / iOS placeholder)
+  # but does NOT publish anything externally. If any build fails, the publish
+  # phase below is skipped, so deployments stay in lockstep across platforms.
+
+  build-web:
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Render config.js from template
+        env:
+          RESUME_DATA_HOST: ${{ vars.RESUME_DATA_HOST }}
+          RESUME_VERSION: ${{ needs.version.outputs.version }}
+        run: ./web/scripts/render-config.sh
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+  build-android:
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Decode keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+
+      - name: Build release APK
+        working-directory: ResumeCore
+        env:
+          RESUME_DATA_HOST: ${{ vars.RESUME_DATA_HOST }}
+          RESUME_SHARE_URL: ${{ vars.RESUME_SHARE_URL }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_VERSION_CODE: ${{ needs.version.outputs.version_code }}
+          ANDROID_VERSION_NAME: ${{ needs.version.outputs.tag }}
+        run: ./gradlew :composeApp:assembleRelease
+
+      - name: Stage APK with versioned filename
+        env:
+          TAG: ${{ needs.version.outputs.tag }}
+        run: |
+          mkdir -p artifacts
+          cp ResumeCore/composeApp/build/outputs/apk/release/composeApp-release.apk \
+             "artifacts/resume-${TAG}.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-release-apk
+          path: artifacts/*.apk
+          if-no-files-found: error
+
+  build-ios:
+    needs: version
+    # Switch to macos-latest when the iOS build is filled in.
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TODO iOS build (version=${{ needs.version.outputs.version }})"
+
+  # ----- Publish phase -----
+  # Only runs once every build job above has succeeded.
+
+  deploy-web:
+    needs: [version, build-web, build-android, build-ios]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  release:
+    needs: [version, build-android, deploy-web]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Need full history so we can list commits since the previous tag.
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-release-apk
+          path: artifacts
+
+      - name: Build release notes
+        id: notes
+        env:
+          TAG: ${{ needs.version.outputs.tag }}
+          PREV_TAG: ${{ needs.version.outputs.previous_tag }}
+          VERSION_CODE: ${{ needs.version.outputs.version_code }}
+          BUILD_TIME: ${{ needs.version.outputs.build_time }}
+          WEB_URL: ${{ needs.deploy-web.outputs.page_url }}
+          SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+          SERVER_URL: ${{ github.server_url }}
+        run: |
+          NOTES_FILE="$RUNNER_TEMP/release-notes.md"
+          SHORT_SHA="${SHA:0:7}"
+          {
+            echo "## Build info"
+            echo ""
+            echo "- **Version**: \`${TAG}\`"
+            echo "- **Version code**: \`${VERSION_CODE}\`"
+            echo "- **Commit**: [\`${SHORT_SHA}\`](${SERVER_URL}/${REPO}/commit/${SHA})"
+            echo "- **Built at**: ${BUILD_TIME}"
+            echo ""
+            echo "## Deployments"
+            echo ""
+            if [ -n "${WEB_URL}" ]; then
+              echo "- **Web**: ${WEB_URL}"
+            else
+              echo "- **Web**: (not deployed)"
+            fi
+            echo "- **Android**: see APK asset attached below"
+            echo "- **iOS**: not yet released"
+            echo ""
+            if [ -n "${PREV_TAG}" ]; then
+              echo "## Changes since [\`${PREV_TAG}\`](${SERVER_URL}/${REPO}/releases/tag/${PREV_TAG})"
+              echo ""
+              git log --pretty=format:"- %h %s (%an)" "${PREV_TAG}..HEAD"
+              printf '\n\n'
+              echo "**Full changelog**: ${SERVER_URL}/${REPO}/compare/${PREV_TAG}...${TAG}"
+            else
+              echo "## Commits in this release"
+              echo ""
+              git log --pretty=format:"- %h %s (%an)" HEAD
+              printf '\n'
+            fi
+          } > "$NOTES_FILE"
+          echo "notes_file=$NOTES_FILE" >> "$GITHUB_OUTPUT"
+          echo "----- release notes preview -----"
+          cat "$NOTES_FILE"
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ needs.version.outputs.tag }}
+          SHA: ${{ github.sha }}
+          NOTES_FILE: ${{ steps.notes.outputs.notes_file }}
+        run: |
+          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            echo "Release $TAG exists, refreshing notes and uploading artifacts."
+            gh release edit "$TAG" --notes-file "$NOTES_FILE" --repo "$REPO"
+            gh release upload "$TAG" artifacts/*.apk --clobber --repo "$REPO"
+          else
+            gh release create "$TAG" \
+              --target "$SHA" \
+              --title "$TAG" \
+              --notes-file "$NOTES_FILE" \
+              --repo "$REPO" \
+              artifacts/*.apk
+          fi
