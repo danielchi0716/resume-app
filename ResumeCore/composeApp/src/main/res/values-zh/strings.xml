@@ -55,7 +55,7 @@
 
     <!-- Platforms -->
     <string name="platform_android_desc">原生 App</string>
-    <string name="platform_ios_desc">Coming soon</string>
+    <string name="platform_ios_desc">原生 App</string>
     <string name="platform_web_desc">響應式網頁</string>
 
     <!-- Overflow menu -->

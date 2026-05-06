@@ -91,6 +91,7 @@ jobs:
         env:
           RESUME_DATA_HOST: ${{ vars.RESUME_DATA_HOST }}
           RESUME_SHARE_URL: ${{ vars.RESUME_SHARE_URL }}
+          RESUME_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}

@@ -55,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.danielchi0716.resume.core.BuildConfig
 import com.danielchi0716.resume.core.R
 import com.danielchi0716.resume.core.model.SideProject
 import com.danielchi0716.resume.core.ui.common.UiState
@@ -66,6 +67,8 @@ import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.TinyChip
 import com.danielchi0716.resume.core.ui.common.rememberDataLocale
 import com.danielchi0716.resume.core.ui.format.formatPeriod
+
+private val REPO_URL: String = BuildConfig.REPO_URL
 
 @Composable
 fun MoreScreen(resumeUrl: String) {
@@ -266,15 +269,15 @@ private fun CtaCard(resumeUrl: String) {
                     desc = stringResource(R.string.platform_android_desc),
                     icon = Icons.Filled.Android,
                     enabled = true,
-                    onClick = null,
+                    onClick = { runCatching { uri.openUri(REPO_URL) } },
                     modifier = Modifier.weight(1f),
                 )
                 PlatformCard(
                     label = "iOS",
                     desc = stringResource(R.string.platform_ios_desc),
                     icon = Icons.Filled.PhoneIphone,
-                    enabled = false,
-                    onClick = null,
+                    enabled = true,
+                    onClick = { runCatching { uri.openUri(REPO_URL) } },
                     modifier = Modifier.weight(1f),
                 )
                 PlatformCard(

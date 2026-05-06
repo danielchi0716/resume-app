@@ -50,6 +50,11 @@ android {
             "RESUME_SHARE_URL",
             "\"${requireBuildConfig("RESUME_SHARE_URL")}\"",
         )
+        buildConfigField(
+            "String",
+            "REPO_URL",
+            "\"${requireBuildConfig("RESUME_REPO_URL")}\"",
+        )
     }
     buildFeatures {
         buildConfig = true

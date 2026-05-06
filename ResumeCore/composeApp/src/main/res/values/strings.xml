@@ -55,7 +55,7 @@
 
     <!-- Platforms -->
     <string name="platform_android_desc">Native App</string>
-    <string name="platform_ios_desc">Coming soon</string>
+    <string name="platform_ios_desc">Native App</string>
     <string name="platform_web_desc">Responsive web</string>
 
     <!-- Overflow menu -->
