@@ -4,6 +4,7 @@ import com.danielchi0716.resume.core.infra.ResumeInfraService
 import com.danielchi0716.resume.core.model.Education
 import com.danielchi0716.resume.core.model.Header
 import com.danielchi0716.resume.core.model.Language
+import com.danielchi0716.resume.core.model.Locale
 import com.danielchi0716.resume.core.model.Meta
 import com.danielchi0716.resume.core.model.SideProject
 import com.danielchi0716.resume.core.model.Skill
@@ -11,23 +12,26 @@ import com.danielchi0716.resume.core.model.WorkExperience
 
 internal class ResumeServiceImpl(
     private val infra: ResumeInfraService,
+    private val locale: Locale,
 ) : ResumeService {
 
-    override suspend fun getMeta(locale: String): Meta = infra.getMeta(locale)
+    private val code: String get() = locale.code
 
-    override suspend fun getHeader(locale: String): Header = infra.getHeader(locale)
+    override suspend fun getMeta(): Meta = infra.getMeta(code)
 
-    override suspend fun getWorkExperience(locale: String): List<WorkExperience> =
-        infra.getWorkExperience(locale)
+    override suspend fun getHeader(): Header = infra.getHeader(code)
 
-    override suspend fun getSideProjects(locale: String): List<SideProject> =
-        infra.getSideProjects(locale)
+    override suspend fun getWorkExperience(): List<WorkExperience> =
+        infra.getWorkExperience(code)
 
-    override suspend fun getSkills(locale: String): List<Skill> = infra.getSkills(locale)
+    override suspend fun getSideProjects(): List<SideProject> =
+        infra.getSideProjects(code)
 
-    override suspend fun getEducation(locale: String): List<Education> = infra.getEducation(locale)
+    override suspend fun getSkills(): List<Skill> = infra.getSkills(code)
 
-    override suspend fun getLanguages(locale: String): List<Language> = infra.getLanguages(locale)
+    override suspend fun getEducation(): List<Education> = infra.getEducation(code)
 
-    override suspend fun getAbout(locale: String): List<String> = infra.getAbout(locale)
+    override suspend fun getLanguages(): List<Language> = infra.getLanguages(code)
+
+    override suspend fun getAbout(): List<String> = infra.getAbout(code)
 }

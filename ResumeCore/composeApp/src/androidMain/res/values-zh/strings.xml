@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ResumeCore</string>
+
+    <!-- Bottom navigation -->
+    <string name="tab_profile">個人</string>
+    <string name="tab_work">經歷</string>
+    <string name="tab_skills">技能</string>
+    <string name="tab_more">更多</string>
+
+    <!-- Top app bar titles -->
+    <string name="title_profile">個人簡介</string>
+    <string name="title_work">工作經歷</string>
+    <string name="title_skills">技能組合</string>
+    <string name="title_more">更多資訊</string>
+
+    <!-- Section headings -->
+    <string name="section_about">關於我</string>
+    <string name="section_languages">語言能力</string>
+    <string name="section_education">學歷</string>
+    <string name="section_work">工作經歷</string>
+    <string name="section_main_projects">主要專案</string>
+    <string name="section_side_projects">個人專案</string>
+    <string name="section_contact">聯絡我 · Get in Touch</string>
+
+    <!-- About expand -->
+    <string name="action_expand">展開全文</string>
+    <string name="action_collapse">收合</string>
+
+    <!-- Work -->
+    <string name="action_view_detail">查看詳細</string>
+    <string name="work_detail_title">工作詳情</string>
+    <string name="swipe_hint">左右滑動切換</string>
+    <string name="stat_total_years">總年資</string>
+    <string name="stat_companies">間公司</string>
+    <string name="stat_projects">主要專案</string>
+
+    <!-- Period & duration -->
+    <string name="period_present">至今</string>
+    <string name="duration_years_months">%1$d 年 %2$d 個月</string>
+    <string name="duration_years">%1$d 年</string>
+    <string name="duration_months">%1$d 個月</string>
+
+    <!-- Skills -->
+    <string name="filter_all">全部</string>
+    <string name="filter_platform">平台</string>
+    <string name="filter_category">原則 / 工具</string>
+    <string name="skill_type_platform">平台 / Platform</string>
+    <string name="skill_type_category">類別 / Category</string>
+
+    <!-- CTA -->
+    <string name="cta_thanks">感謝你閱讀到這裡</string>
+    <string name="cta_subtitle">這份履歷我做了三個平台版本，\n一份內容、三種閱讀體驗</string>
+    <string name="cta_bridge">想進一步交流？任選一個方式聯絡我 ↓</string>
+
+    <!-- Platforms -->
+    <string name="platform_android_desc">原生 App</string>
+    <string name="platform_ios_desc">Coming soon</string>
+    <string name="platform_web_desc">響應式網頁</string>
+
+    <!-- Overflow menu -->
+    <string name="menu_share">分享履歷</string>
+    <string name="menu_language">語系 / Language</string>
+    <string name="menu_theme">主題 / Theme</string>
+    <string name="theme_system">跟隨系統</string>
+    <string name="theme_light">淺色 Light</string>
+    <string name="theme_dark">深色 Dark</string>
+    <string name="theme_dynamic">動態色彩</string>
+    <string name="lang_tc">繁體中文</string>
+    <string name="lang_en">English</string>
+
+    <!-- Share intent -->
+    <string name="share_title">紀賀元 Daniel Chi · Resume</string>
+    <string name="share_text">Senior App Engineer · 8+ 年雙平台 App 開發</string>
+    <string name="share_copied">已複製履歷連結 ✓</string>
+
+    <!-- Error state -->
+    <string name="error_title">載入失敗</string>
+    <string name="error_retry">重試</string>
+
+    <!-- Contact labels -->
+    <string name="label_email">Email</string>
+    <string name="label_phone">電話</string>
+    <string name="label_github">GitHub</string>
+    <string name="label_linkedin">LinkedIn</string>
+</resources>

@@ -1,192 +1,172 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.danielchi0716.resume.core
 
-import com.danielchi0716.resume.core.model.Period
-import com.danielchi0716.resume.core.model.YearMonth
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Work
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.core.os.LocaleListCompat
+import com.danielchi0716.resume.core.data.AppPreferences
+import com.danielchi0716.resume.core.model.Locale
+import com.danielchi0716.resume.core.ui.common.AppActions
+import com.danielchi0716.resume.core.ui.common.LocalAppActions
+import com.danielchi0716.resume.core.ui.more.MoreScreen
+import com.danielchi0716.resume.core.ui.profile.ProfileScreen
+import com.danielchi0716.resume.core.ui.skills.SkillsScreen
+import com.danielchi0716.resume.core.ui.theme.ResumeTheme
+import com.danielchi0716.resume.core.ui.theme.ThemeMode
+import com.danielchi0716.resume.core.ui.work.WorkScreen
 import kotlinx.coroutines.launch
 
-@Composable
+private const val ResumeUrl = "https://resume.danielchi0716.workers.dev/"
+
+private enum class Tab(
+    @param:StringRes val labelRes: Int,
+    val icon: ImageVector,
+) {
+    Profile(R.string.tab_profile, Icons.Filled.Person),
+    Work(R.string.tab_work, Icons.Filled.Work),
+    Skills(R.string.tab_skills, Icons.Filled.Code),
+    More(R.string.tab_more, Icons.Filled.Apps),
+}
+
 @Preview
+@Composable
 fun App() {
-    MaterialTheme {
-        TestScreen()
+    val context = LocalContext.current
+    val prefs = remember(context) { AppPreferences(context) }
+    var themeMode by remember { mutableStateOf(prefs.themeMode) }
+
+    ResumeTheme(themeMode = themeMode) {
+        ResumeRoot(
+            onThemeChange = {
+                themeMode = it
+                prefs.themeMode = it
+            },
+        )
     }
 }
 
-private sealed interface LoadState {
-    data object Idle : LoadState
-    data object Loading : LoadState
-    data class Success(val text: String) : LoadState
-    data class Error(val message: String) : LoadState
+private fun applyAppLocale(locale: Locale) {
+    val tag = when (locale) {
+        Locale.TraditionalChinese -> "zh"
+        Locale.English -> "en"
+    }
+    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
 }
 
 @Composable
-private fun TestScreen() {
-    var locale by remember { mutableStateOf("en") }
-    var state by remember { mutableStateOf<LoadState>(LoadState.Idle) }
+private fun ResumeRoot(
+    onThemeChange: (ThemeMode) -> Unit,
+) {
+    var tab by rememberSaveable { mutableStateOf(Tab.Profile) }
+    val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    Surface(
-        modifier = Modifier.fillMaxSize().safeContentPadding(),
-        color = MaterialTheme.colorScheme.background,
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                LocaleButton("EN", selected = locale == "en") { locale = "en" }
-                LocaleButton("TC", selected = locale == "tc") { locale = "tc" }
-            }
+    val shareTitle = stringResource(R.string.share_title)
+    val shareText = stringResource(R.string.share_text)
+    val shareCopied = stringResource(R.string.share_copied)
 
-            Button(
-                onClick = {
-                    scope.launch {
-                        state = LoadState.Loading
-                        state = runCatching { fetchSummary(locale) }
-                            .fold(
-                                onSuccess = { LoadState.Success(it) },
-                                onFailure = { LoadState.Error(it.toString()) },
-                            )
+    val handleShare: () -> Unit = {
+        val sent = sendShareIntent(context, shareTitle, shareText, ResumeUrl)
+        if (!sent) {
+            copyToClipboard(context, ResumeUrl)
+            scope.launch { snackbar.showSnackbar(shareCopied) }
+        }
+    }
+
+    val appActions = remember(onThemeChange) {
+        AppActions(
+            onLocaleChange = ::applyAppLocale,
+            onThemeChange = onThemeChange,
+            onShare = handleShare,
+        )
+    }
+
+    CompositionLocalProvider(LocalAppActions provides appActions) {
+        Scaffold(
+            bottomBar = {
+                NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
+                    Tab.entries.forEach { t ->
+                        NavigationBarItem(
+                            selected = tab == t,
+                            onClick = { tab = t },
+                            icon = { Icon(t.icon, contentDescription = null) },
+                            label = { Text(stringResource(t.labelRes)) },
+                        )
                     }
-                },
-                enabled = state !is LoadState.Loading,
-            ) {
-                Text("Load ($locale)")
-            }
-
-            when (val s = state) {
-                LoadState.Idle -> Text("Press Load.")
-                LoadState.Loading -> CircularProgressIndicator()
-                is LoadState.Success -> Text(
-                    text = s.text,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 11.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState()),
-                )
-                is LoadState.Error -> Text(
-                    text = s.message,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState()),
-                )
+                }
+            },
+            snackbarHost = { SnackbarHost(snackbar) },
+            containerColor = MaterialTheme.colorScheme.surface,
+            // Each screen owns its own TopAppBar (and that bar handles its own
+            // status-bar inset), so we must zero out Scaffold's content insets to
+            // avoid double counting the top inset.
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        ) { padding ->
+            Box(Modifier.fillMaxSize().padding(padding)) {
+                when (tab) {
+                    Tab.Profile -> ProfileScreen()
+                    Tab.Work -> WorkScreen()
+                    Tab.Skills -> SkillsScreen()
+                    Tab.More -> MoreScreen(resumeUrl = ResumeUrl)
+                }
             }
         }
     }
 }
 
-@Composable
-private fun LocaleButton(label: String, selected: Boolean, onClick: () -> Unit) {
-    if (selected) {
-        Button(onClick = onClick) { Text(label) }
-    } else {
-        OutlinedButton(onClick = onClick) { Text(label) }
-    }
+private fun sendShareIntent(context: Context, title: String, text: String, url: String): Boolean {
+    return runCatching {
+        val send = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, title)
+            putExtra(Intent.EXTRA_TEXT, "$text\n$url")
+        }
+        val chooser = Intent.createChooser(send, title).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(chooser)
+        true
+    }.getOrElse { false }
 }
 
-private val EN_MONTH_SHORT = listOf(
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-)
-
-private fun formatYearMonth(ym: YearMonth, locale: String): String =
-    if (locale == "tc") "${ym.year}/${ym.month.toString().padStart(2, '0')}"
-    else "${EN_MONTH_SHORT[ym.month - 1]} ${ym.year}"
-
-private fun formatPeriod(period: Period, locale: String): String {
-    val start = period.start
-    val end = period.end
-    val startsInJan = start.month == 1
-    val endsInDec = end != null && end.month == 12
-    if (startsInJan && (endsInDec || end == null)) {
-        return when {
-            end == null || start.year == end.year -> "${start.year}"
-            else -> "${start.year} ─ ${end.year}"
-        }
-    }
-    val present = if (locale == "tc") "至今" else "Present"
-    val endLabel = end?.let { formatYearMonth(it, locale) } ?: present
-    return "${formatYearMonth(start, locale)} ─ $endLabel"
-}
-
-private suspend fun fetchSummary(locale: String): String {
-    val s = ResumeCore.service()
-    val sb = StringBuilder()
-    val meta = s.getMeta(locale)
-    sb.appendLine("=== Meta ===")
-    sb.appendLine("lang=${meta.lang} version=${meta.version} updatedAt=${meta.updatedAt}")
-    sb.appendLine("title=${meta.labels.pageTitle}")
-    sb.appendLine()
-
-    val header = s.getHeader(locale)
-    sb.appendLine("=== Header ===")
-    sb.appendLine("name=${header.name}")
-    sb.appendLine("subtitle=${header.subtitle}")
-    sb.appendLine("contacts=${header.contacts.size}")
-    sb.appendLine()
-
-    val work = s.getWorkExperience(locale)
-    sb.appendLine("=== WorkExperience (${work.size}) ===")
-    work.forEach { sb.appendLine("- ${it.company} (${formatPeriod(it.period, locale)}), projects=${it.projects.size}") }
-    sb.appendLine()
-
-    val side = s.getSideProjects(locale)
-    sb.appendLine("=== SideProjects (${side.size}) ===")
-    side.forEach { sb.appendLine("- ${it.name}") }
-    sb.appendLine()
-
-    val skills = s.getSkills(locale)
-    sb.appendLine("=== Skills (${skills.size}) ===")
-    skills.forEach {
-        val label = when (it) {
-            is com.danielchi0716.resume.core.model.Skill.Platform -> "platform/${it.subcategories.size} subs"
-            is com.danielchi0716.resume.core.model.Skill.Category -> "category/${it.tags.size} tags"
-        }
-        sb.appendLine("- ${it.name} ($label)")
-    }
-    sb.appendLine()
-
-    val edu = s.getEducation(locale)
-    sb.appendLine("=== Education (${edu.size}) ===")
-    edu.forEach { sb.appendLine("- ${it.school} — ${it.major}") }
-    sb.appendLine()
-
-    val langs = s.getLanguages(locale)
-    sb.appendLine("=== Languages (${langs.size}) ===")
-    langs.forEach { sb.appendLine("- ${it.name}: ${it.level}") }
-    sb.appendLine()
-
-    val about = s.getAbout(locale)
-    sb.appendLine("=== About (${about.size} paragraphs) ===")
-    about.forEachIndexed { i, p -> sb.appendLine("[${i + 1}] ${p.take(80)}...") }
-
-    return sb.toString()
+private fun copyToClipboard(context: Context, text: String) {
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+    clipboard?.setPrimaryClip(ClipData.newPlainText("resume", text))
 }

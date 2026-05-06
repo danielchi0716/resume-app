@@ -1,3 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ResumeCore</string>
+
+    <!-- Bottom navigation -->
+    <string name="tab_profile">Profile</string>
+    <string name="tab_work">Work</string>
+    <string name="tab_skills">Skills</string>
+    <string name="tab_more">More</string>
+
+    <!-- Top app bar titles -->
+    <string name="title_profile">Profile</string>
+    <string name="title_work">Work Experience</string>
+    <string name="title_skills">Skills</string>
+    <string name="title_more">More</string>
+
+    <!-- Section headings -->
+    <string name="section_about">About</string>
+    <string name="section_languages">Languages</string>
+    <string name="section_education">Education</string>
+    <string name="section_work">Work Experience</string>
+    <string name="section_main_projects">Key Projects</string>
+    <string name="section_side_projects">Side Projects</string>
+    <string name="section_contact">Get in Touch</string>
+
+    <!-- About expand -->
+    <string name="action_expand">Read more</string>
+    <string name="action_collapse">Collapse</string>
+
+    <!-- Work -->
+    <string name="action_view_detail">View detail</string>
+    <string name="work_detail_title">Work Detail</string>
+    <string name="swipe_hint">Swipe to switch</string>
+    <string name="stat_total_years">years</string>
+    <string name="stat_companies">companies</string>
+    <string name="stat_projects">projects</string>
+
+    <!-- Period & duration -->
+    <string name="period_present">Present</string>
+    <string name="duration_years_months">%1$dy %2$dm</string>
+    <string name="duration_years">%1$dy</string>
+    <string name="duration_months">%1$dm</string>
+
+    <!-- Skills -->
+    <string name="filter_all">All</string>
+    <string name="filter_platform">Platform</string>
+    <string name="filter_category">Principles / Tools</string>
+    <string name="skill_type_platform">Platform</string>
+    <string name="skill_type_category">Category</string>
+
+    <!-- CTA -->
+    <string name="cta_thanks">Thanks for reading</string>
+    <string name="cta_subtitle">Three platforms, one resume,\nthree ways to read it</string>
+    <string name="cta_bridge">Want to chat? Pick any of the channels below ↓</string>
+
+    <!-- Platforms -->
+    <string name="platform_android_desc">Native App</string>
+    <string name="platform_ios_desc">Coming soon</string>
+    <string name="platform_web_desc">Responsive web</string>
+
+    <!-- Overflow menu -->
+    <string name="menu_share">Share resume</string>
+    <string name="menu_language">Language</string>
+    <string name="menu_theme">Theme</string>
+    <string name="theme_system">Follow system</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_dynamic">Dynamic color</string>
+    <string name="lang_tc">繁體中文</string>
+    <string name="lang_en">English</string>
+
+    <!-- Share intent -->
+    <string name="share_title">Daniel Chi · Resume</string>
+    <string name="share_text">Senior App Engineer · 8+ years cross-platform mobile</string>
+    <string name="share_copied">Resume link copied ✓</string>
+
+    <!-- Error state -->
+    <string name="error_title">Failed to load</string>
+    <string name="error_retry">Retry</string>
+
+    <!-- Contact labels -->
+    <string name="label_email">Email</string>
+    <string name="label_phone">Phone</string>
+    <string name="label_github">GitHub</string>
+    <string name="label_linkedin">LinkedIn</string>
 </resources>
