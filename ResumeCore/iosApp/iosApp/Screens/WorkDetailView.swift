@@ -257,9 +257,9 @@ private struct ProjectBody: View {
     let accent: Color
 
     var body: some View {
-        if let yl = project as? ProjectYearList {
+        if let yl = project as? Project.YearList {
             YearTimeline(items: yl.yearItems as? [YearItem] ?? [], accent: accent)
-        } else if let bl = project as? ProjectBullets {
+        } else if let bl = project as? Project.Bullets {
             BulletList(bullets: bl.bullets as? [String] ?? [], accent: accent)
         } else {
             EmptyView()
@@ -296,7 +296,7 @@ private struct YearTimeline: View {
                         .padding(.top, 6)
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text((item.years as? [Int] ?? []).map { String($0) }.joined(separator: " ─ "))
+                            Text((item.years as? [KotlinInt] ?? []).map { String($0.int32Value) }.joined(separator: " ─ "))
                                 .font(HIGType.caption1Emph)
                                 .foregroundColor(accent)
                                 .tracking(0.4)

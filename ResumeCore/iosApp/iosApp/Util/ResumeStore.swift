@@ -20,7 +20,7 @@ final class ResumeStore: ObservableObject {
     @Published var sideProjects: LoadState<[SideProject]> = .loading
     @Published var meta: LoadState<Meta> = .loading
 
-    private let locale: Shared.Locale = AppLocale.current == .zh ? .traditionalChinese : .english
+    private let locale: Shared.Locale = AppLocale.current == .zh ? .traditionalchinese : .english
 
     private var service: ResumeService {
         IosBridgeKt.resumeService(locale: locale)

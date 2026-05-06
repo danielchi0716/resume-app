@@ -7,13 +7,11 @@ struct ContactButton: View {
     @Environment(\.higScheme) private var scheme
 
     var body: some View {
-        let url = URL(string: contact.url.raw)
+        let url = (contact.url as? String).flatMap { URL(string: $0) }
         Group {
             if let url {
-                Link(destination: url) {
-                    content
-                }
-                .buttonStyle(.plain)
+                Link(destination: url) { content }
+                    .buttonStyle(.plain)
             } else {
                 content
             }
