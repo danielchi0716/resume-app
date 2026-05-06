@@ -2,16 +2,6 @@ name: Deploy
 
 on:
   workflow_dispatch:
-    inputs:
-      platform:
-        description: Platform to deploy
-        type: choice
-        options:
-          - web
-          - android
-          - ios
-        required: true
-        default: web
 
 permissions:
   contents: read
@@ -19,14 +9,32 @@ permissions:
   id-token: write
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.compute.outputs.version }}
+      tag: ${{ steps.compute.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: compute
+        run: |
+          DATE=$(TZ='Asia/Taipei' date +'%Y.%m.%d')
+          SHA=$(git rev-parse --short HEAD)
+          VERSION="${DATE}-${SHA}"
+          TAG="v${VERSION}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "Computed version: ${VERSION}"
+          echo "Tag: ${TAG}"
+
   deploy-web:
-    if: inputs.platform == 'web'
+    needs: version
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     permissions:
-      contents: write
       pages: write
       id-token: write
     concurrency:
@@ -35,22 +43,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Compute version
-        id: version
-        run: |
-          DATE=$(TZ='Asia/Taipei' date +'%Y.%m.%d')
-          SHA=$(git rev-parse --short HEAD)
-          VERSION="${DATE}-${SHA}"
-          TAG="web-v${VERSION}"
-          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
-          echo "Computed version: ${VERSION}"
-          echo "Tag: ${TAG}"
-
       - name: Render config.js from template
         env:
           RESUME_DATA_HOST: ${{ vars.RESUME_DATA_HOST }}
-          RESUME_VERSION: ${{ steps.version.outputs.version }}
+          RESUME_VERSION: ${{ needs.version.outputs.version }}
         run: ./web/scripts/render-config.sh
 
       - uses: actions/configure-pages@v5
@@ -62,27 +58,34 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v4
 
+  deploy-android:
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TODO Android build & deploy (version=${{ needs.version.outputs.version }})"
+
+  deploy-ios:
+    needs: version
+    # Switch to macos-latest when the iOS build is filled in.
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TODO iOS build & deploy (version=${{ needs.version.outputs.version }})"
+
+  tag:
+    needs: [version, deploy-web, deploy-android, deploy-ios]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
       - name: Tag release
+        env:
+          TAG: ${{ needs.version.outputs.tag }}
         run: |
-          TAG='${{ steps.version.outputs.tag }}'
           if git rev-parse "$TAG" >/dev/null 2>&1; then
             echo "Tag $TAG already exists, skipping."
             exit 0
           fi
           git tag "$TAG"
           git push origin "$TAG"
-
-  deploy-android:
-    if: inputs.platform == 'android'
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "TODO: Android build & deploy"
-
-  deploy-ios:
-    if: inputs.platform == 'ios'
-    # Switch to macos-latest when the iOS build is filled in.
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "TODO: iOS build & deploy"
