@@ -1,11 +1,8 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
@@ -27,39 +24,8 @@ fun optionalConfig(key: String): String? =
     System.getenv(key) ?: localProps.getProperty(key)
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
-    
-    sourceSets {
-        androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.activity.compose)
-            implementation(libs.androidx.material.iconsExtended)
-            implementation(libs.androidx.appcompat)
-            implementation(libs.androidx.core.ktx)
-            implementation(libs.coil.network.okhttp)
-            implementation(libs.hilt.android)
-            implementation(libs.androidx.hilt.navigationCompose)
-            implementation(libs.androidx.navigation.compose)
-        }
-        commonMain.dependencies {
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
-            implementation(libs.compose.material3)
-            implementation(libs.compose.ui)
-            implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.coil.compose)
-            implementation(projects.shared)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
     }
 }
 
@@ -87,6 +53,7 @@ android {
     }
     buildFeatures {
         buildConfig = true
+        compose = true
     }
     packaging {
         resources {
@@ -123,7 +90,27 @@ android {
 }
 
 dependencies {
-    debugImplementation(libs.compose.uiTooling)
-    add("kspAndroid", libs.hilt.compiler)
-}
+    implementation(projects.shared)
 
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.uiToolingPreview)
+    implementation(libs.androidx.lifecycle.viewmodelCompose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.coil.compose)
+
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.material.iconsExtended)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.coil.network.okhttp)
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigationCompose)
+    implementation(libs.androidx.navigation.compose)
+
+    debugImplementation(libs.compose.uiTooling)
+    ksp(libs.hilt.compiler)
+    testImplementation(libs.kotlin.test)
+}
