@@ -21,7 +21,7 @@ struct ProfileView: View {
                                 Text(p)
                                     .font(HIGType.subheadline)
                                     .foregroundColor(hig.label)
-                                    .lineSpacing(4)
+                                    .lineSpacing(2)
                             }
                         }
                     }

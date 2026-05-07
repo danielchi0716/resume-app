@@ -31,7 +31,7 @@ struct ContactButton: View {
             .shadow(color: scheme == .dark ? .clear : .black.opacity(0.04),
                     radius: 1, y: 1)
             Text(label)
-                .font(HIGType.caption1Emph)
+                .font(.system(size: 12, weight: .medium))
                 .foregroundColor(hig.secondaryLabel)
         }
     }
@@ -41,7 +41,7 @@ struct ContactButton: View {
         case .email:    return "envelope.fill"
         case .phone:    return "phone.fill"
         case .github:   return "chevron.left.forwardslash.chevron.right"
-        case .linkedin: return "briefcase.fill"
+        case .linkedin: return "briefcase"
         default:        return "link"
         }
     }

@@ -47,7 +47,7 @@ private struct DetailHeader: View {
                 Button(action: onClose) {
                     HStack(spacing: 2) {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.system(size: 22, weight: .medium))
                         Text(L10n.workDetailTitle)
                             .font(HIGType.body)
                     }
@@ -99,7 +99,7 @@ private struct SegmentedControl: View {
                             Text(job.company
                                 .replacingOccurrences(of: "股份有限公司", with: "")
                                 .replacingOccurrences(of: "有限公司", with: ""))
-                                .font(idx == page ? HIGType.subheadlineEmph : HIGType.subheadline)
+                                .font(.system(size: 15, weight: idx == page ? .semibold : .medium))
                                 .foregroundColor(idx == page ? hig.label : hig.secondaryLabel)
                                 .frame(maxWidth: .infinity)
                         }
@@ -190,7 +190,7 @@ private struct JobHeader: View {
                             Text(bullet)
                                 .font(HIGType.subheadline)
                                 .foregroundColor(hig.label)
-                                .lineSpacing(4)
+                                .lineSpacing(2)
                         }
                     }
                 }
@@ -223,7 +223,7 @@ private struct ProjectCard: View {
                     }
                     Spacer()
                     Image(systemName: "chevron.down")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 20, weight: .medium))
                         .foregroundColor(hig.tertiaryLabel)
                         .rotationEffect(.degrees(open ? 180 : 0))
                 }
@@ -297,7 +297,7 @@ private struct YearTimeline: View {
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text((item.years as? [KotlinInt] ?? []).map { String($0.int32Value) }.joined(separator: " ─ "))
-                                .font(HIGType.caption1Emph)
+                                .font(.system(size: 12, weight: .bold))
                                 .foregroundColor(accent)
                                 .tracking(0.4)
                             Text(item.title)

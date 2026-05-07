@@ -126,7 +126,7 @@ private struct WorkCard: View {
                         Text(first)
                             .font(HIGType.footnote)
                             .foregroundColor(hig.secondaryLabel)
-                            .lineSpacing(4)
+                            .lineSpacing(2)
                             .padding(.top, 12)
                     }
 
@@ -135,7 +135,7 @@ private struct WorkCard: View {
                             .font(HIGType.subheadlineEmph)
                             .foregroundColor(hig.tint)
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(hig.tint)
                     }
                     .padding(.top, 12)

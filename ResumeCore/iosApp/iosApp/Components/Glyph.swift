@@ -13,7 +13,7 @@ struct Glyph: View {
             RoundedRectangle(cornerRadius: radius, style: .continuous)
                 .fill(background)
             Image(systemName: systemImage)
-                .font(.system(size: size * 0.55, weight: iconWeight))
+                .font(.system(size: size * 0.6, weight: iconWeight))
                 .foregroundColor(foreground)
         }
         .frame(width: size, height: size)

@@ -15,7 +15,7 @@ struct TagView: View {
                     .frame(width: 6, height: 6)
             }
             Text(text)
-                .font(HIGType.caption1Emph)
+                .font(.system(size: 12, weight: .medium))
                 .foregroundColor(color)
         }
         .padding(.horizontal, 10)
@@ -32,10 +32,10 @@ struct GoldBadge: View {
     let text: String
     var body: some View {
         HStack(spacing: 4) {
-            Image(systemName: "rosette")
-                .font(.system(size: 11, weight: .semibold))
+            Image(systemName: "medal.fill")
+                .font(.system(size: 13, weight: .semibold))
             Text(text)
-                .font(HIGType.caption1Emph)
+                .font(.system(size: 12, weight: .semibold))
                 .tracking(0.3)
         }
         .foregroundColor(Color(hex: 0xFFFBE8))

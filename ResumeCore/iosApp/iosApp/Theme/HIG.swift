@@ -164,9 +164,8 @@ enum HIGRadius {
     static let xs: CGFloat = 6
     static let sm: CGFloat = 10
     static let md: CGFloat = 14
-    static let lg: CGFloat = 18
-    static let xl: CGFloat = 22
-    static let xxl: CGFloat = 26
+    static let lg: CGFloat = 22
+    static let xl: CGFloat = 26
 }
 
 enum ThemePreference: String, CaseIterable, Identifiable {

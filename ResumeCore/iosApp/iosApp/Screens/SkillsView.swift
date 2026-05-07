@@ -16,7 +16,7 @@ struct SkillsView: View {
                         let icon = iconFor(name: skill.name)
                         SectionHeaderText(skill.name) {
                             Image(systemName: icon)
-                                .font(.system(size: 12, weight: .semibold))
+                                .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(color)
                         }
                         InsetCard(padding: EdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16)) {

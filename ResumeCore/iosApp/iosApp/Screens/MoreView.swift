@@ -90,7 +90,7 @@ private struct SideProjectCard: View {
                             Text(b)
                                 .font(HIGType.footnote)
                                 .foregroundColor(hig.label)
-                                .lineSpacing(4)
+                                .lineSpacing(2)
                         }
                     }
                 }
@@ -124,12 +124,12 @@ private struct ClosingCard: View {
                 Text(L10n.ctaThanks)
                     .font(HIGType.title2)
                     .foregroundColor(.white)
-                    .padding(.top, 4)
+                    .padding(.top, 10)
 
                 Text(L10n.ctaSubtitle)
                     .font(HIGType.subheadline)
                     .foregroundColor(.white.opacity(0.9))
-                    .lineSpacing(4)
+                    .lineSpacing(1)
                     .padding(.top, 6)
 
                 ArchitectureDiagram()
@@ -143,7 +143,7 @@ private struct ClosingCard: View {
                     .foregroundColor(.white.opacity(0.85))
                     .padding(.top, 14)
             }
-            .padding(EdgeInsets(top: 24, leading: 20, bottom: 22, trailing: 20))
+            .padding(EdgeInsets(top: 24, leading: 20, bottom: 24, trailing: 20))
         }
     }
 }
@@ -158,7 +158,7 @@ private struct ArchitectureDiagram: View {
                     .foregroundColor(HIGColors.light.tint)
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Kotlin Multiplatform")
-                        .font(HIGType.caption1Emph)
+                        .font(.system(size: 12, weight: .bold))
                         .foregroundColor(HIGColors.light.tint)
                         .tracking(0.2)
                     Text("Shared Domain · Data")
