@@ -17,19 +17,9 @@ struct WorkDetailView: View {
     var body: some View {
         VStack(spacing: 0) {
             DetailHeader(jobs: jobs, page: $page)
-
-            TabView(selection: $page) {
-                ForEach(Array(jobs.enumerated()), id: \.offset) { idx, job in
-                    ScrollView {
-                        JobPage(job: job, accent: idx == 0 ? hig.tint : hig.indigo, idx: idx)
-                            .padding(.bottom, 60)
-                    }
-                    .tag(idx)
-                }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+            JobPager(jobs: jobs, page: $page)
         }
-        .background(hig.systemGroupedBackground.ignoresSafeArea())
+        .background(hig.systemGroupedBackground)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -39,6 +29,45 @@ struct WorkDetailView: View {
                     .monospacedDigit()
             }
         }
+    }
+}
+
+private struct JobPager: View {
+    let jobs: [WorkExperience]
+    @Binding var page: Int
+    @Environment(\.hig) private var hig
+
+    var body: some View {
+        GeometryReader { proxy in
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: 0) {
+                    ForEach(Array(jobs.enumerated()), id: \.offset) { idx, job in
+                        ScrollView(.vertical) {
+                            JobPage(job: job,
+                                    accent: idx == 0 ? hig.tint : hig.indigo,
+                                    idx: idx)
+                        }
+                        .frame(width: proxy.size.width)
+                        .id(idx)
+                    }
+                }
+                .scrollTargetLayout()
+            }
+            .scrollTargetBehavior(.paging)
+            .scrollIndicators(.hidden)
+            .scrollPosition(id: scrollIDBinding)
+        }
+    }
+
+    private var scrollIDBinding: Binding<Int?> {
+        Binding(
+            get: { page },
+            set: { newID in
+                if let newID, newID != page {
+                    page = newID
+                }
+            }
+        )
     }
 }
 
