@@ -23,23 +23,12 @@ struct WorkView: View {
             }
         }
         .background(hig.systemGroupedBackground.ignoresSafeArea())
-        .fullScreenCover(item: Binding(
-            get: { detailIndex.map(IdentifiedIndex.init) },
-            set: { detailIndex = $0?.value }
-        )) { ident in
+        .navigationDestination(item: $detailIndex) { idx in
             if case .ready(let jobs) = store.work {
-                WorkDetailView(jobs: jobs, initialIndex: ident.value) {
-                    detailIndex = nil
-                }
-                .higTheme(ThemePrefStore.current)
+                WorkDetailView(jobs: jobs, initialIndex: idx)
             }
         }
     }
-}
-
-private struct IdentifiedIndex: Identifiable {
-    let value: Int
-    var id: Int { value }
 }
 
 private struct StatStrip: View {

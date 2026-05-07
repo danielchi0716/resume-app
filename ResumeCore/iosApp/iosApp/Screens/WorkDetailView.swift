@@ -4,21 +4,23 @@ import Shared
 struct WorkDetailView: View {
     let jobs: [WorkExperience]
     let initialIndex: Int
-    var onClose: () -> Void
 
     @State private var page: Int
     @Environment(\.hig) private var hig
 
-    init(jobs: [WorkExperience], initialIndex: Int, onClose: @escaping () -> Void) {
+    init(jobs: [WorkExperience], initialIndex: Int) {
         self.jobs = jobs
         self.initialIndex = initialIndex
-        self.onClose = onClose
         _page = State(initialValue: initialIndex)
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            DetailHeader(jobs: jobs, page: $page, onClose: onClose)
+            SegmentedControl(jobs: jobs, page: $page)
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 12)
+
             TabView(selection: $page) {
                 ForEach(Array(jobs.enumerated()), id: \.offset) { idx, job in
                     ScrollView {
@@ -31,43 +33,14 @@ struct WorkDetailView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
         .background(hig.systemGroupedBackground.ignoresSafeArea())
-    }
-}
-
-private struct DetailHeader: View {
-    let jobs: [WorkExperience]
-    @Binding var page: Int
-    var onClose: () -> Void
-
-    @Environment(\.hig) private var hig
-
-    var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Button(action: onClose) {
-                    HStack(spacing: 2) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 22, weight: .medium))
-                        Text(L10n.workDetailTitle)
-                            .font(HIGType.body)
-                    }
-                    .foregroundColor(hig.tint)
-                }
-                Spacer()
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
                 Text("\(page + 1) / \(jobs.count)")
                     .font(HIGType.footnote)
                     .foregroundColor(hig.secondaryLabel)
             }
-            .padding(.horizontal, 12)
-            .frame(height: 44)
-
-            // Segmented control
-            SegmentedControl(jobs: jobs, page: $page)
-                .padding(.horizontal, 16)
-                .padding(.top, 4)
-                .padding(.bottom, 12)
         }
-        .background(hig.systemGroupedBackground)
     }
 }
 
