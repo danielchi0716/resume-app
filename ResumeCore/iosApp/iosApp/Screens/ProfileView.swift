@@ -70,7 +70,7 @@ private struct HeroCard: View {
             .allowsHitTesting(false)
 
             VStack(spacing: 10) {
-                Avatar()
+                Avatar(photo: header.photo)
                 Text("\(header.name) · Daniel Chi")
                     .font(HIGType.title2)
                     .foregroundColor(hig.label)
@@ -93,20 +93,46 @@ private struct HeroCard: View {
     }
 
     private struct Avatar: View {
+        let photo: Photo
         @Environment(\.hig) private var hig
+
+        private var resolvedURL: URL? {
+            guard let raw = photo.url as? String, !raw.isEmpty else { return nil }
+            return URL(string: IosBridgeKt.resolveResourceUrl(rawUrl: raw))
+        }
+
         var body: some View {
+            Group {
+                if let url = resolvedURL {
+                    AsyncImage(url: url, transaction: Transaction(animation: .easeInOut(duration: 0.25))) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image.resizable().scaledToFill()
+                        default:
+                            monogram
+                        }
+                    }
+                } else {
+                    monogram
+                }
+            }
+            .frame(width: 92, height: 92)
+            .clipShape(Circle())
+            .shadow(color: .black.opacity(0.18), radius: 18, y: 6)
+            .accessibilityLabel(photo.alt)
+        }
+
+        private var monogram: some View {
             ZStack {
-                Circle()
-                    .fill(LinearGradient(
-                        colors: [hig.tint, hig.indigo],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing))
+                LinearGradient(
+                    colors: [hig.tint, hig.indigo],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
                 Text("DC")
                     .font(.system(size: 36, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
             }
-            .frame(width: 92, height: 92)
-            .shadow(color: .black.opacity(0.18), radius: 18, y: 6)
         }
     }
 }
