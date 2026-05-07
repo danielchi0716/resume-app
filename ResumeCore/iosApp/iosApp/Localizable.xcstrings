@@ -33,6 +33,20 @@
         }
       }
     },
+    "action.collapse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show less" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "收合" } }
+      }
+    },
+    "action.expand" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Read more" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "展開全文" } }
+      }
+    },
     "contact.email" : {
       "extractionState" : "manual",
       "localizations" : {

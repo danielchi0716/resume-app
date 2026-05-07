@@ -40,7 +40,8 @@ struct ListRow<Leading: View, Trailing: View>: View {
             }
         }
         .padding(.horizontal, 16)
-        .frame(minHeight: 52)
+        .padding(.vertical, 12)
+        .frame(minHeight: 56)
         .contentShape(Rectangle())
         .onTapGesture { onTap?() }
         .overlay(alignment: .bottom) {

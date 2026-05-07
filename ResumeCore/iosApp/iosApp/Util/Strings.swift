@@ -61,6 +61,10 @@ enum L10n {
     static var statCompanies:  String { tr("stat.companies") }
     static var statProjects:   String { tr("stat.projects") }
 
+    // Expand / collapse
+    static var actionExpand:   String { tr("action.expand") }
+    static var actionCollapse: String { tr("action.collapse") }
+
     // Work
     static var actionViewDetail: String { tr("work.view_detail") }
     static var workDetailTitle:  String { tr("work.detail_title") }

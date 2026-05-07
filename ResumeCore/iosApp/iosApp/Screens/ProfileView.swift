@@ -13,22 +13,6 @@ struct ProfileView: View {
                     QuickContacts(contacts: header.contacts)
                 }
 
-                resolveLoadState(store.about, retry: { Task { await store.loadAbout() } }) { paragraphs in
-                    SectionHeaderText(L10n.sectionAbout)
-                    InsetCard(padding: EdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16)) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            ForEach(Array(paragraphs.enumerated()), id: \.offset) { _, p in
-                                Text(p)
-                                    .font(HIGType.subheadline)
-                                    .foregroundColor(hig.label)
-                                    .lineSpacing(2)
-                            }
-                        }
-                    }
-                }
-
-                Color.clear.frame(height: 28)
-
                 resolveLoadState(store.languages, retry: { Task { await store.loadLanguages() } }) { langs in
                     SectionHeaderText(L10n.sectionLanguages)
                     InsetCard {
@@ -52,6 +36,12 @@ struct ProfileView: View {
                             }
                         }
                     }
+                }
+
+                Color.clear.frame(height: 28)
+
+                resolveLoadState(store.about, retry: { Task { await store.loadAbout() } }) { paragraphs in
+                    AboutSection(paragraphs: paragraphs)
                 }
 
                 Color.clear.frame(height: 24)
@@ -84,10 +74,13 @@ private struct HeroCard: View {
                 Text("\(header.name) · Daniel Chi")
                     .font(HIGType.title2)
                     .foregroundColor(hig.label)
+                    .multilineTextAlignment(.center)
                     .padding(.top, 4)
                 Text("\(header.subtitle) · \(header.tagline.text)")
                     .font(HIGType.subheadline)
                     .foregroundColor(hig.secondaryLabel)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(2)
                 FlowingChips(items: header.tagline.keywords as? [String] ?? [])
                     .padding(.top, 6)
             }
@@ -186,5 +179,51 @@ private struct EducationRow: View {
                 Glyph(systemImage: "graduationcap.fill", background: accent)
             }
         )
+    }
+}
+
+private struct AboutSection: View {
+    let paragraphs: [String]
+    @State private var expanded = false
+    @Environment(\.hig) private var hig
+
+    private var canToggle: Bool { paragraphs.count > 1 }
+
+    private var visibleParagraphs: [String] {
+        expanded || !canToggle ? paragraphs : Array(paragraphs.prefix(1))
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionHeaderText(L10n.sectionAbout)
+            InsetCard(padding: EdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16)) {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(Array(visibleParagraphs.enumerated()), id: \.offset) { _, p in
+                        Text(p)
+                            .font(HIGType.subheadline)
+                            .foregroundColor(hig.label)
+                            .lineSpacing(2)
+                    }
+                    if canToggle {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.22)) {
+                                expanded.toggle()
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text(expanded ? L10n.actionCollapse : L10n.actionExpand)
+                                    .font(HIGType.subheadlineEmph)
+                                Image(systemName: "chevron.down")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .rotationEffect(.degrees(expanded ? 180 : 0))
+                            }
+                            .foregroundColor(hig.tint)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.top, 2)
+                    }
+                }
+            }
+        }
     }
 }
