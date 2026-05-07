@@ -16,10 +16,7 @@ struct WorkDetailView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            SegmentedControl(jobs: jobs, page: $page)
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 12)
+            DetailHeader(jobs: jobs, page: $page)
 
             TabView(selection: $page) {
                 ForEach(Array(jobs.enumerated()), id: \.offset) { idx, job in
@@ -39,49 +36,62 @@ struct WorkDetailView: View {
                 Text("\(page + 1) / \(jobs.count)")
                     .font(HIGType.footnote)
                     .foregroundColor(hig.secondaryLabel)
+                    .monospacedDigit()
             }
         }
     }
 }
 
-private struct SegmentedControl: View {
+private struct DetailHeader: View {
     let jobs: [WorkExperience]
     @Binding var page: Int
     @Environment(\.hig) private var hig
 
-    var body: some View {
-        GeometryReader { proxy in
-            let width = proxy.size.width
-            let segmentWidth = (width - 4) / CGFloat(jobs.count)
-            ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 9, style: .continuous)
-                    .fill(hig.tertiarySystemFill)
-                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    .fill(hig.secondarySystemGroupedBackground)
-                    .frame(width: segmentWidth, height: 28)
-                    .padding(2)
-                    .offset(x: CGFloat(page) * segmentWidth)
-                    .animation(.easeInOut(duration: 0.25), value: page)
-                    .shadow(color: .black.opacity(0.12), radius: 3, y: 1)
+    private var current: WorkExperience { jobs[page] }
 
-                HStack(spacing: 0) {
-                    ForEach(Array(jobs.enumerated()), id: \.offset) { idx, job in
-                        Button {
-                            page = idx
-                        } label: {
-                            Text(job.company
-                                .replacingOccurrences(of: "股份有限公司", with: "")
-                                .replacingOccurrences(of: "有限公司", with: ""))
-                                .font(.system(size: 15, weight: idx == page ? .semibold : .medium))
-                                .foregroundColor(idx == page ? hig.label : hig.secondaryLabel)
-                                .frame(maxWidth: .infinity)
+    private var trimmedCompany: String {
+        current.company
+            .replacingOccurrences(of: "股份有限公司", with: "")
+            .replacingOccurrences(of: "有限公司", with: "")
+    }
+
+    var body: some View {
+        VStack(spacing: 12) {
+            // Current company + period (centered)
+            VStack(spacing: 2) {
+                Text(trimmedCompany)
+                    .font(.system(size: 17, weight: .bold))
+                    .foregroundColor(hig.label)
+                    .multilineTextAlignment(.center)
+                Text(PeriodFormatter.format(current.period))
+                    .font(HIGType.footnote)
+                    .foregroundColor(hig.secondaryLabel)
+                    .monospacedDigit()
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 4)
+            .id(page) // crossfade between pages
+
+            // Page dots
+            HStack(spacing: 6) {
+                ForEach(0..<jobs.count, id: \.self) { idx in
+                    Capsule()
+                        .fill(idx == page ? hig.tint : hig.systemFill)
+                        .frame(width: idx == page ? 22 : 7, height: 7)
+                        .frame(height: 24) // expand tap target vertically
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation(.easeOut(duration: 0.22)) {
+                                page = idx
+                            }
                         }
-                        .buttonStyle(.plain)
-                    }
+                        .animation(.easeOut(duration: 0.22), value: page)
                 }
             }
+            .padding(.bottom, 4)
         }
-        .frame(height: 32)
+        .frame(maxWidth: .infinity)
+        .animation(.easeInOut(duration: 0.18), value: page)
     }
 }
 
