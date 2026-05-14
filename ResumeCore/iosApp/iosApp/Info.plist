@@ -11,5 +11,11 @@
 		<string>en</string>
 		<string>zh-Hant</string>
 	</array>
+	<key>RESUME_DATA_HOST</key>
+	<string>$(RESUME_DATA_HOST)</string>
+	<key>RESUME_SHARE_URL</key>
+	<string>$(RESUME_SHARE_URL)</string>
+	<key>RESUME_REPO_URL</key>
+	<string>$(RESUME_REPO_URL)</string>
 </dict>
 </plist>

@@ -17,8 +17,21 @@ struct iOSApp: App {
     }
 }
 
+/// Build-time configuration injected via xcconfig → Info.plist.
+/// Source of truth lives in env vars (CI) or ResumeCore/local.properties (local),
+/// rendered into Configuration/AppConfig.xcconfig by scripts/render-appconfig.sh.
 enum AppConfig {
-    static let resumeDataHost = "resume-data.danielchi0716.workers.dev"
-    static let resumeShareUrl = "https://resume.danielchi0716.workers.dev/"
-    static let repoUrl = "https://github.com/danielchi0716/resume-app"
+    static let resumeDataHost = infoString("RESUME_DATA_HOST")
+    static let resumeShareUrl = infoString("RESUME_SHARE_URL")
+    static let repoUrl        = infoString("RESUME_REPO_URL")
+
+    private static func infoString(_ key: String) -> String {
+        guard let value = Bundle.main.object(forInfoDictionaryKey: key) as? String,
+              !value.isEmpty
+        else {
+            assertionFailure("Missing Info.plist entry for \(key). Run scripts/render-appconfig.sh.")
+            return ""
+        }
+        return value
+    }
 }

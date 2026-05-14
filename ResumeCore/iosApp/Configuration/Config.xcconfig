@@ -1,3 +1,5 @@
+#include "AppConfig.xcconfig"
+
 TEAM_ID=
 
 PRODUCT_NAME=ResumeCore
