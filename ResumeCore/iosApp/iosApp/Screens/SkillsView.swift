@@ -14,7 +14,7 @@ struct SkillsView: View {
                     ForEach(Array(skills.enumerated()), id: \.offset) { _, skill in
                         let color = colorFor(name: skill.name)
                         let icon = iconFor(name: skill.name)
-                        SectionHeaderText(skill.name) {
+                        SectionHeaderText(verbatim: skill.name) {
                             Image(systemName: icon)
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(color)
@@ -75,10 +75,10 @@ private struct IntroCard: View {
         HStack(spacing: 14) {
             Glyph(systemImage: "bolt.fill", size: 42, background: hig.tint, radius: 10)
             VStack(alignment: .leading, spacing: 2) {
-                Text(L10n.titleSkills)
+                Text("nav.skills")
                     .font(HIGType.headline)
                     .foregroundColor(hig.label)
-                Text(L10n.skillsSummary(skills.count, totalCount))
+                Text(verbatim: String(format: String(localized: "skills.summary"), skills.count, totalCount))
                     .font(HIGType.footnote)
                     .foregroundColor(hig.secondaryLabel)
             }

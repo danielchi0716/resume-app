@@ -5,7 +5,7 @@ struct LoadingPanel: View {
     var body: some View {
         VStack(spacing: 12) {
             ProgressView()
-            Text(L10n.loading)
+            Text("state.loading")
                 .font(HIGType.footnote)
                 .foregroundColor(hig.secondaryLabel)
         }
@@ -24,7 +24,7 @@ struct ErrorPanel: View {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 28, weight: .semibold))
                 .foregroundColor(hig.orange)
-            Text(L10n.errorTitle)
+            Text("error.title")
                 .font(HIGType.headline)
                 .foregroundColor(hig.label)
             Text(message)
@@ -32,7 +32,7 @@ struct ErrorPanel: View {
                 .foregroundColor(hig.secondaryLabel)
                 .multilineTextAlignment(.center)
             Button(action: onRetry) {
-                Text(L10n.errorRetry)
+                Text("error.retry")
                     .font(HIGType.bodyEmph)
                     .foregroundColor(.white)
                     .padding(.horizontal, 18)

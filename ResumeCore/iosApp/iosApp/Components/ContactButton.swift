@@ -30,7 +30,7 @@ struct ContactButton: View {
             .frame(width: 56, height: 56)
             .shadow(color: scheme == .dark ? .clear : .black.opacity(0.04),
                     radius: 1, y: 1)
-            Text(label)
+            labelText
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(hig.secondaryLabel)
         }
@@ -55,13 +55,13 @@ struct ContactButton: View {
         }
     }
 
-    private var label: String {
+    private var labelText: Text {
         switch contact.type {
-        case .email:    return L10n.labelEmail
-        case .phone:    return L10n.labelPhone
-        case .github:   return L10n.labelGithub
-        case .linkedin: return L10n.labelLinkedin
-        default:        return contact.value
+        case .email:    return Text("contact.email")
+        case .phone:    return Text("contact.phone")
+        case .github:   return Text("contact.github")
+        case .linkedin: return Text("contact.linkedin")
+        default:        return Text(verbatim: contact.value)
         }
     }
 }

@@ -21,7 +21,7 @@ struct InsetCard<Content: View>: View {
 }
 
 struct SectionHeaderText: View {
-    let text: String
+    let textView: Text
     var leading: AnyView? = nil
 
     @Environment(\.hig) private var hig
@@ -31,7 +31,7 @@ struct SectionHeaderText: View {
             if let leading {
                 leading
             }
-            Text(text)
+            textView
                 .font(HIGType.footnote)
                 .foregroundColor(hig.secondaryLabel)
                 .textCase(.uppercase)
@@ -42,13 +42,21 @@ struct SectionHeaderText: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    init(_ text: String) {
-        self.text = text
-        self.leading = nil
+    init(_ key: LocalizedStringKey) {
+        self.textView = Text(key)
     }
 
-    init<L: View>(_ text: String, @ViewBuilder leading: () -> L) {
-        self.text = text
+    init(verbatim text: String) {
+        self.textView = Text(verbatim: text)
+    }
+
+    init<L: View>(_ key: LocalizedStringKey, @ViewBuilder leading: () -> L) {
+        self.textView = Text(key)
+        self.leading = AnyView(leading())
+    }
+
+    init<L: View>(verbatim text: String, @ViewBuilder leading: () -> L) {
+        self.textView = Text(verbatim: text)
         self.leading = AnyView(leading())
     }
 }

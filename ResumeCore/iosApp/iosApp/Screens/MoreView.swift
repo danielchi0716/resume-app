@@ -9,7 +9,7 @@ struct MoreView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 resolveLoadState(store.sideProjects, retry: { Task { await store.loadSideProjects() } }) { projects in
-                    SectionHeaderText(L10n.sectionSideProjects)
+                    SectionHeaderText("section.side_projects")
                     VStack(spacing: 12) {
                         ForEach(Array(projects.enumerated()), id: \.offset) { idx, project in
                             SideProjectCard(project: project,
@@ -28,7 +28,7 @@ struct MoreView: View {
                 Color.clear.frame(height: 24)
 
                 if case .ready(let header) = store.header {
-                    SectionHeaderText(L10n.sectionContact)
+                    SectionHeaderText("section.contact")
                     HStack(spacing: 12) {
                         ForEach(Array(header.contacts.enumerated()), id: \.offset) { _, contact in
                             ContactButton(contact: contact)
@@ -121,12 +121,12 @@ private struct ClosingCard: View {
                     .font(.system(size: 32, weight: .medium))
                     .foregroundColor(.white)
 
-                Text(L10n.ctaThanks)
+                Text("cta.thanks")
                     .font(HIGType.title2)
                     .foregroundColor(.white)
                     .padding(.top, 10)
 
-                Text(L10n.ctaSubtitle)
+                Text("cta.subtitle")
                     .font(HIGType.subheadline)
                     .foregroundColor(.white.opacity(0.9))
                     .lineSpacing(1)
@@ -138,7 +138,7 @@ private struct ClosingCard: View {
                 WebRow()
                     .padding(.top, 10)
 
-                Text(L10n.ctaBridge)
+                Text("cta.bridge")
                     .font(HIGType.footnote)
                     .foregroundColor(.white.opacity(0.85))
                     .padding(.top, 14)
@@ -182,9 +182,9 @@ private struct ArchitectureDiagram: View {
 
             // Platform circles
             HStack {
-                PlatformCircle(systemImage: "smartphone", label: L10n.platformAndroid)
+                PlatformCircle(systemImage: "smartphone", label: "platform.android")
                 Spacer()
-                PlatformCircle(systemImage: "iphone.gen3", label: L10n.platformIOS)
+                PlatformCircle(systemImage: "iphone.gen3", label: "platform.ios")
             }
             .padding(.horizontal, 28)
         }
@@ -237,7 +237,7 @@ private struct ConnectorLines: View {
 
 private struct PlatformCircle: View {
     let systemImage: String
-    let label: String
+    let label: LocalizedStringKey
 
     var body: some View {
         VStack(spacing: 5) {
@@ -271,10 +271,10 @@ private struct WebRow: View {
                 .frame(width: 36, height: 36)
 
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(L10n.platformWeb)
+                    Text("platform.web")
                         .font(HIGType.subheadlineEmph)
                         .foregroundColor(.white)
-                    Text(L10n.platformWebDesc)
+                    Text("platform.web_desc")
                         .font(HIGType.caption1)
                         .foregroundColor(.white.opacity(0.8))
                 }
@@ -301,7 +301,7 @@ private struct Footer: View {
     @Environment(\.hig) private var hig
 
     var body: some View {
-        Text(L10n.footerNote)
+        Text("footer.note")
             .font(HIGType.caption1)
             .foregroundColor(hig.tertiaryLabel)
             .frame(maxWidth: .infinity)

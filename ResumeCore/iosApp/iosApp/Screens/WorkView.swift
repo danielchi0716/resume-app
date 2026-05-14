@@ -11,7 +11,7 @@ struct WorkView: View {
             VStack(alignment: .leading, spacing: 0) {
                 resolveLoadState(store.work, retry: { Task { await store.loadWork() } }) { jobs in
                     StatStrip(jobs: jobs)
-                    SectionHeaderText(L10n.sectionWork)
+                    SectionHeaderText("section.work")
                     VStack(spacing: 12) {
                         ForEach(Array(jobs.enumerated()), id: \.offset) { idx, job in
                             WorkCard(job: job, idx: idx) { detailIndex = idx }
@@ -35,13 +35,13 @@ private struct StatStrip: View {
     let jobs: [WorkExperience]
     @Environment(\.hig) private var hig
 
-    private var stats: [(String, String)] {
+    private var stats: [(String, LocalizedStringKey)] {
         let years = PeriodFormatter.totalYearsApprox(jobs.map { $0.period })
         let projectsCount = jobs.reduce(0) { $0 + Int($1.projects.count) }
         return [
-            (years, L10n.statTotalYears),
-            ("\(jobs.count)", L10n.statCompanies),
-            ("\(projectsCount)+", L10n.statProjects)
+            (years, "stat.total_years"),
+            ("\(jobs.count)", "stat.companies"),
+            ("\(projectsCount)+", "stat.projects")
         ]
     }
 
@@ -120,7 +120,7 @@ private struct WorkCard: View {
                     }
 
                     HStack(spacing: 4) {
-                        Text(L10n.actionViewDetail)
+                        Text("work.view_detail")
                             .font(HIGType.subheadlineEmph)
                             .foregroundColor(hig.tint)
                         Image(systemName: "chevron.right")

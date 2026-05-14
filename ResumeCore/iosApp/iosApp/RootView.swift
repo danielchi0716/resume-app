@@ -5,12 +5,12 @@ enum RootTab: String, CaseIterable, Identifiable {
     case profile, work, skills, more
     var id: String { rawValue }
 
-    var label: String {
+    var label: LocalizedStringKey {
         switch self {
-        case .profile: return L10n.tabProfile
-        case .work:    return L10n.tabWork
-        case .skills:  return L10n.tabSkills
-        case .more:    return L10n.tabMore
+        case .profile: return "tab.profile"
+        case .work:    return "tab.work"
+        case .skills:  return "tab.skills"
+        case .more:    return "tab.more"
         }
     }
 
@@ -42,7 +42,7 @@ struct RootView: View {
                                         Image(systemName: "ellipsis")
                                             .font(.system(size: 17, weight: .semibold))
                                     }
-                                    .accessibilityLabel(L10n.sheetTitle)
+                                    .accessibilityLabel("sheet.title")
                                 }
                             }
                             .navigationTitle(navTitle(for: entry))
@@ -57,21 +57,21 @@ struct RootView: View {
         }
         .higTheme(theme)
         .onAppear { store.loadAll() }
-        .confirmationDialog(L10n.sheetTitle, isPresented: $menuOpen, titleVisibility: .visible) {
-            Button(L10n.themeLight) { setTheme(.light) }
-            Button(L10n.themeDark) { setTheme(.dark) }
-            Button(L10n.themeSystem) { setTheme(.system) }
-            Button(L10n.openSettings) {
+        .confirmationDialog("sheet.title", isPresented: $menuOpen, titleVisibility: .visible) {
+            Button("theme.light") { setTheme(.light) }
+            Button("theme.dark") { setTheme(.dark) }
+            Button("theme.system") { setTheme(.system) }
+            Button("sheet.open_settings") {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(url)
                 }
             }
-            Button(L10n.openWeb) {
+            Button("sheet.open_web") {
                 if let url = URL(string: AppConfig.resumeShareUrl) {
                     UIApplication.shared.open(url)
                 }
             }
-            Button(L10n.cancel, role: .cancel) {}
+            Button("sheet.cancel", role: .cancel) {}
         }
     }
 
@@ -85,12 +85,12 @@ struct RootView: View {
         }
     }
 
-    private func navTitle(for tab: RootTab) -> String {
+    private func navTitle(for tab: RootTab) -> LocalizedStringKey {
         switch tab {
-        case .profile: return L10n.titleProfile
-        case .work:    return L10n.titleWork
-        case .skills:  return L10n.titleSkills
-        case .more:    return L10n.titleMore
+        case .profile: return "nav.profile"
+        case .work:    return "nav.work"
+        case .skills:  return "nav.skills"
+        case .more:    return "nav.more"
         }
     }
 

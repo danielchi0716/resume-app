@@ -14,7 +14,7 @@ struct ProfileView: View {
                 }
 
                 resolveLoadState(store.languages, retry: { Task { await store.loadLanguages() } }) { langs in
-                    SectionHeaderText(L10n.sectionLanguages)
+                    SectionHeaderText("section.languages")
                     InsetCard {
                         VStack(spacing: 0) {
                             ForEach(Array(langs.enumerated()), id: \.offset) { idx, lang in
@@ -27,7 +27,7 @@ struct ProfileView: View {
                 Color.clear.frame(height: 28)
 
                 resolveLoadState(store.education, retry: { Task { await store.loadEducation() } }) { edus in
-                    SectionHeaderText(L10n.sectionEducation)
+                    SectionHeaderText("section.education")
                     InsetCard {
                         VStack(spacing: 0) {
                             ForEach(Array(edus.enumerated()), id: \.offset) { idx, edu in
@@ -221,7 +221,7 @@ private struct AboutSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            SectionHeaderText(L10n.sectionAbout)
+            SectionHeaderText("section.about")
             InsetCard(padding: EdgeInsets(top: 14, leading: 16, bottom: 14, trailing: 16)) {
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(Array(visibleParagraphs.enumerated()), id: \.offset) { _, p in
@@ -237,7 +237,7 @@ private struct AboutSection: View {
                             }
                         } label: {
                             HStack(spacing: 4) {
-                                Text(expanded ? L10n.actionCollapse : L10n.actionExpand)
+                                (expanded ? Text("action.collapse") : Text("action.expand"))
                                     .font(HIGType.subheadlineEmph)
                                 Image(systemName: "chevron.down")
                                     .font(.system(size: 12, weight: .semibold))

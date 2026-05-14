@@ -22,7 +22,7 @@ enum PeriodFormatter {
             }
             return "\(start.year)"
         }
-        let endLabel = end.map { yearMonth($0, useChinese: useChinese) } ?? L10n.present
+        let endLabel = end.map { yearMonth($0, useChinese: useChinese) } ?? String(localized: "period.present")
         return "\(yearMonth(start, useChinese: useChinese)) ─ \(endLabel)"
     }
 
@@ -32,9 +32,9 @@ enum PeriodFormatter {
         let y = months / 12
         let m = months % 12
         switch (y, m) {
-        case (0, _): return L10n.durationMonths(m)
-        case (_, 0): return L10n.durationYears(y)
-        default:     return L10n.durationYearsMonths(y, m)
+        case (0, _): return localizedFormat("duration.months", m)
+        case (_, 0): return localizedFormat("duration.years", y)
+        default:     return localizedFormat("duration.years_months", y, m)
         }
     }
 
@@ -72,5 +72,9 @@ enum PeriodFormatter {
         let cal = Calendar(identifier: .gregorian)
         let comps = cal.dateComponents([.year, .month], from: Date())
         return YearMonth(year: Int32(comps.year ?? 2026), month: Int32(comps.month ?? 1))
+    }
+
+    private static func localizedFormat(_ key: String.LocalizationValue, _ args: CVarArg...) -> String {
+        String(format: String(localized: key), arguments: args)
     }
 }

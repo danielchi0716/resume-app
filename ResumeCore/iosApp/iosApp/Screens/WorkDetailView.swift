@@ -136,7 +136,7 @@ private struct JobPage: View {
             JobHeader(job: job, accent: accent, idx: idx)
                 .padding(.horizontal, 16)
 
-            SectionHeaderText(L10n.sectionMainProjects)
+            SectionHeaderText("section.main_projects")
 
             VStack(spacing: 10) {
                 ForEach(Array((job.projects as? [Project] ?? []).enumerated()), id: \.offset) { _, project in
