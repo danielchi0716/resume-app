@@ -197,7 +197,8 @@ private struct EducationRow: View {
     let isLast: Bool
 
     var body: some View {
-        let subtitle = "\(edu.major) · \(PeriodFormatter.format(edu.period))"
+        let endLabel = edu.period.end?.formatted ?? String(localized: "period.present")
+        let subtitle = "\(edu.major) · \(edu.period.start.formatted) ─ \(endLabel)"
         ListRow(
             title: edu.school,
             subtitle: subtitle,

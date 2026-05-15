@@ -37,7 +37,7 @@ private struct StatStrip: View {
     @Environment(\.hig) private var hig
 
     private var stats: [(String, LocalizedStringKey)] {
-        let years = PeriodFormatter.totalYearsApprox(jobs.map { $0.period })
+        let years = jobs.map { $0.period }.totalYearsApprox
         let projectsCount = jobs.reduce(0) { $0 + Int($1.projects.count) }
         return [
             (years, "stat.total_years"),
@@ -104,10 +104,12 @@ private struct WorkCard: View {
                         .padding(.top, 2)
 
                     HStack(spacing: 6) {
-                        TagView(text: PeriodFormatter.format(job.period),
+                        TagView(text: "\(job.period.start.formatted) ─ \(job.period.end?.formatted ?? String(localized: "period.present"))",
                                 color: isCurrent ? hig.green : hig.secondaryLabel,
                                 leadingDot: isCurrent)
-                        TagView(text: PeriodFormatter.duration(job.period),
+                        TagView(text: job.period.dateRange.formatted(
+                                    .components(style: .condensedAbbreviated, fields: [.year, .month])
+                                ),
                                 color: hig.secondaryLabel)
                     }
                     .padding(.top, 10)

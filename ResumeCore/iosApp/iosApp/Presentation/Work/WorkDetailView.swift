@@ -92,7 +92,7 @@ private struct DetailHeader: View {
                     .font(.system(size: 17, weight: .bold))
                     .foregroundColor(hig.label)
                     .multilineTextAlignment(.center)
-                Text(PeriodFormatter.format(current.period))
+                Text(verbatim: "\(current.period.start.formatted) ─ \(current.period.end?.formatted ?? String(localized: "period.present"))")
                     .font(HIGType.footnote)
                     .foregroundColor(hig.secondaryLabel)
                     .monospacedDigit()
@@ -179,10 +179,12 @@ private struct JobHeader: View {
                             .foregroundColor(hig.secondaryLabel)
                             .padding(.top, 2)
                         HStack(spacing: 6) {
-                            TagView(text: PeriodFormatter.format(job.period),
+                            TagView(text: "\(job.period.start.formatted) ─ \(job.period.end?.formatted ?? String(localized: "period.present"))",
                                     color: isCurrent ? hig.green : hig.secondaryLabel,
                                     leadingDot: isCurrent)
-                            TagView(text: PeriodFormatter.duration(job.period),
+                            TagView(text: job.period.dateRange.formatted(
+                                        .components(style: .condensedAbbreviated, fields: [.year, .month])
+                                    ),
                                     color: hig.secondaryLabel)
                         }
                         .padding(.top, 10)
@@ -258,7 +260,8 @@ private struct ProjectCard: View {
     }
 
     private var subtitleText: String {
-        let p = PeriodFormatter.format(project.period)
+        let endLabel = project.period.end?.formatted ?? String(localized: "period.present")
+        let p = "\(project.period.start.formatted) ─ \(endLabel)"
         if let s = project.summary, !s.isEmpty { return "\(p) · \(s)" }
         return p
     }

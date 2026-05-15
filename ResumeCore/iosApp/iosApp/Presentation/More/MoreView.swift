@@ -73,7 +73,8 @@ private struct SideProjectCard: View {
                         Text(project.subtitle)
                             .font(HIGType.footnote)
                             .foregroundColor(hig.secondaryLabel)
-                        TagView(text: PeriodFormatter.format(project.period), color: accent)
+                        TagView(text: "\(project.period.start.formatted) ─ \(project.period.end?.formatted ?? String(localized: "period.present"))",
+                                color: accent)
                             .padding(.top, 8)
                     }
                     Spacer()
