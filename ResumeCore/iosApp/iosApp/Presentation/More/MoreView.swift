@@ -83,7 +83,7 @@ private struct SideProjectCard: View {
                 Divider().background(hig.separator).padding(.vertical, 12)
 
                 VStack(alignment: .leading, spacing: 8) {
-                    ForEach(Array((project.bullets as? [String] ?? []).enumerated()), id: \.offset) { _, b in
+                    ForEach(Array(project.bullets.enumerated()), id: \.offset) { _, b in
                         HStack(alignment: .top, spacing: 10) {
                             Circle()
                                 .fill(accent)

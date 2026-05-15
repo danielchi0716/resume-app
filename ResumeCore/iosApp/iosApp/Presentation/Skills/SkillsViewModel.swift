@@ -20,8 +20,7 @@ final class SkillsViewModel {
     func loadSkills() async {
         skills = .loading
         do {
-            let value = try await service.getSkills()
-            skills = .ready(value as? [Skill] ?? [])
+            skills = .ready(try await service.getSkills())
         } catch {
             skills = .error(error.localizedDescription)
         }

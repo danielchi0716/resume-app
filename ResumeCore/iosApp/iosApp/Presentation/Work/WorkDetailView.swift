@@ -139,7 +139,7 @@ private struct JobPage: View {
             SectionHeaderText("section.main_projects")
 
             VStack(spacing: 10) {
-                ForEach(Array((job.projects as? [Project] ?? []).enumerated()), id: \.offset) { _, project in
+                ForEach(Array(job.projects.enumerated()), id: \.offset) { _, project in
                     ProjectCard(project: project, accent: accent)
                 }
             }
@@ -195,7 +195,7 @@ private struct JobHeader: View {
                 Divider().background(hig.separator).padding(.vertical, 14)
 
                 VStack(alignment: .leading, spacing: 8) {
-                    ForEach(Array((job.bullets as? [String] ?? []).enumerated()), id: \.offset) { _, bullet in
+                    ForEach(Array(job.bullets.enumerated()), id: \.offset) { _, bullet in
                         HStack(alignment: .top, spacing: 10) {
                             Circle()
                                 .fill(accent)
@@ -273,9 +273,9 @@ private struct ProjectBody: View {
 
     var body: some View {
         if let yl = project as? Project.YearList {
-            YearTimeline(items: yl.yearItems as? [YearItem] ?? [], accent: accent)
+            YearTimeline(items: yl.yearItems, accent: accent)
         } else if let bl = project as? Project.Bullets {
-            BulletList(bullets: bl.bullets as? [String] ?? [], accent: accent)
+            BulletList(bullets: bl.bullets, accent: accent)
         } else {
             EmptyView()
         }
@@ -311,7 +311,7 @@ private struct YearTimeline: View {
                         .padding(.top, 6)
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text((item.years as? [KotlinInt] ?? []).map { String($0.int32Value) }.joined(separator: " ─ "))
+                            Text(item.years.map { String($0.int32Value) }.joined(separator: " ─ "))
                                 .font(.system(size: 12, weight: .bold))
                                 .foregroundColor(accent)
                                 .tracking(0.4)
@@ -324,7 +324,7 @@ private struct YearTimeline: View {
                                     .foregroundColor(hig.secondaryLabel)
                                     .lineSpacing(4)
                             }
-                            let bullets = item.bullets as? [String] ?? []
+                            let bullets = item.bullets
                             if !bullets.isEmpty {
                                 VStack(alignment: .leading, spacing: 4) {
                                     ForEach(Array(bullets.enumerated()), id: \.offset) { _, b in
@@ -335,7 +335,7 @@ private struct YearTimeline: View {
                                     }
                                 }
                             }
-                            let tags = item.tags as? [String] ?? []
+                            let tags = item.tags
                             if !tags.isEmpty {
                                 FlowLayoutTags(tags: tags, color: hig.secondaryLabel)
                             }

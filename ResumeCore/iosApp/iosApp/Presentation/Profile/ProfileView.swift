@@ -82,7 +82,7 @@ private struct HeroCard: View {
                     .foregroundColor(hig.secondaryLabel)
                     .multilineTextAlignment(.center)
                     .lineSpacing(2)
-                FlowingChips(items: header.tagline.keywords as? [String] ?? [])
+                FlowingChips(items: header.tagline.keywords)
                     .padding(.top, 6)
             }
             .padding(.horizontal, 20)

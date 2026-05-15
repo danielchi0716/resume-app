@@ -63,10 +63,9 @@ private struct IntroCard: View {
     var totalCount: Int {
         skills.reduce(0) { acc, s in
             if let cat = s as? Skill.Category {
-                return acc + Int((cat.tags as? [String])?.count ?? 0)
+                return acc + cat.tags.count
             } else if let plat = s as? Skill.Platform {
-                let subs = plat.subcategories as? [SkillSubcategory] ?? []
-                return acc + subs.reduce(0) { $0 + Int(($1.items as? [String])?.count ?? 0) }
+                return acc + plat.subcategories.reduce(0) { $0 + $1.items.count }
             }
             return acc
         }
@@ -105,18 +104,18 @@ private struct SkillBody: View {
     var body: some View {
         if let plat = skill as? Skill.Platform {
             VStack(alignment: .leading, spacing: 14) {
-                ForEach(Array((plat.subcategories as? [SkillSubcategory] ?? []).enumerated()), id: \.offset) { _, sub in
+                ForEach(Array(plat.subcategories.enumerated()), id: \.offset) { _, sub in
                     VStack(alignment: .leading, spacing: 6) {
                         Text(sub.label)
                             .font(HIGType.caption1Emph)
                             .foregroundColor(hig.secondaryLabel)
                             .tracking(0.3)
-                        FlowLayoutTags(tags: sub.items as? [String] ?? [], color: color)
+                        FlowLayoutTags(tags: sub.items, color: color)
                     }
                 }
             }
         } else if let cat = skill as? Skill.Category {
-            FlowLayoutTags(tags: cat.tags as? [String] ?? [], color: color)
+            FlowLayoutTags(tags: cat.tags, color: color)
         } else {
             EmptyView()
         }

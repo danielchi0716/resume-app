@@ -23,8 +23,7 @@ final class MoreViewModel {
     func loadSideProjects() async {
         sideProjects = .loading
         do {
-            let value = try await service.getSideProjects()
-            sideProjects = .ready(value as? [SideProject] ?? [])
+            sideProjects = .ready(try await service.getSideProjects())
         } catch {
             sideProjects = .error(error.localizedDescription)
         }

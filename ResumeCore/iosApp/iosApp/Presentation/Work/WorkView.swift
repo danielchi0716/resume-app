@@ -114,7 +114,7 @@ private struct WorkCard: View {
                     }
                     .padding(.top, 10)
 
-                    if let first = (job.bullets as? [String])?.first {
+                    if let first = job.bullets.first {
                         Text(first)
                             .font(HIGType.footnote)
                             .foregroundColor(hig.secondaryLabel)

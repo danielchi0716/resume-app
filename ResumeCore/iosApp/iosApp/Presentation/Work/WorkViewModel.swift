@@ -20,8 +20,7 @@ final class WorkViewModel {
     func loadWork() async {
         work = .loading
         do {
-            let value = try await service.getWorkExperience()
-            work = .ready(value as? [WorkExperience] ?? [])
+            work = .ready(try await service.getWorkExperience())
         } catch {
             work = .error(error.localizedDescription)
         }

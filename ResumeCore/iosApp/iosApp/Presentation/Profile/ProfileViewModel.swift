@@ -35,8 +35,7 @@ final class ProfileViewModel {
     func loadAbout() async {
         about = .loading
         do {
-            let value = try await service.getAbout()
-            about = .ready(value as? [String] ?? [])
+            about = .ready(try await service.getAbout())
         } catch {
             about = .error(error.localizedDescription)
         }
@@ -45,8 +44,7 @@ final class ProfileViewModel {
     func loadLanguages() async {
         languages = .loading
         do {
-            let value = try await service.getLanguages()
-            languages = .ready(value as? [Language] ?? [])
+            languages = .ready(try await service.getLanguages())
         } catch {
             languages = .error(error.localizedDescription)
         }
@@ -55,8 +53,7 @@ final class ProfileViewModel {
     func loadEducation() async {
         education = .loading
         do {
-            let value = try await service.getEducation()
-            education = .ready(value as? [Education] ?? [])
+            education = .ready(try await service.getEducation())
         } catch {
             education = .error(error.localizedDescription)
         }
