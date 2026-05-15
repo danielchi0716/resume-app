@@ -27,7 +27,6 @@ enum RootTab: String, CaseIterable, Identifiable {
 struct RootView: View {
     @State private var theme: ThemePreference = ThemePrefStore.current
     @State private var tab: RootTab = .profile
-    @State private var menuOpen = false
 
     var body: some View {
         ZStack {
@@ -37,11 +36,7 @@ struct RootView: View {
                         screen(for: entry)
                             .toolbar {
                                 ToolbarItem(placement: .topBarTrailing) {
-                                    Button { menuOpen = true } label: {
-                                        Image(systemName: "ellipsis")
-                                            .font(.system(size: 17, weight: .semibold))
-                                    }
-                                    .accessibilityLabel("sheet.title")
+                                    overflowMenu
                                 }
                             }
                             .navigationTitle(navTitle(for: entry))
@@ -55,22 +50,35 @@ struct RootView: View {
             .tint(HIGColors.light.tint) // overridden via env in screens
         }
         .higTheme(theme)
-        .confirmationDialog("sheet.title", isPresented: $menuOpen, titleVisibility: .visible) {
-            Button("theme.light") { setTheme(.light) }
-            Button("theme.dark") { setTheme(.dark) }
-            Button("theme.system") { setTheme(.system) }
-            Button("sheet.open_settings") {
+        .onChange(of: theme) { _, newValue in
+            ThemePrefStore.current = newValue
+        }
+    }
+
+    private var overflowMenu: some View {
+        Menu {
+            Picker("sheet.title", selection: $theme) {
+                Label("theme.light", systemImage: "sun.max").tag(ThemePreference.light)
+                Label("theme.dark", systemImage: "moon").tag(ThemePreference.dark)
+                Label("theme.system", systemImage: "iphone").tag(ThemePreference.system)
+            }
+            .pickerStyle(.inline)
+
+            Button("sheet.open_settings", systemImage: "gear") {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(url)
                 }
             }
-            Button("sheet.open_web") {
+            Button("sheet.open_web", systemImage: "safari") {
                 if let url = URL(string: AppConfig.resumeShareUrl) {
                     UIApplication.shared.open(url)
                 }
             }
-            Button("sheet.cancel", role: .cancel) {}
+        } label: {
+            Image(systemName: "ellipsis")
+                .font(.system(size: 17, weight: .semibold))
         }
+        .accessibilityLabel("sheet.title")
     }
 
     @ViewBuilder
@@ -92,8 +100,4 @@ struct RootView: View {
         }
     }
 
-    private func setTheme(_ value: ThemePreference) {
-        theme = value
-        ThemePrefStore.current = value
-    }
 }
