@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D51A2D412FB71CC400DC6E24 /* FactoryKit in Frameworks */ = {isa = PBXBuildFile; productRef = D51A2D402FB71CC400DC6E24 /* FactoryKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		7F3A4411F71635494CAB3DCD /* ResumeCore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ResumeCore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -41,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D51A2D412FB71CC400DC6E24 /* FactoryKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +90,7 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				D51A2D402FB71CC400DC6E24 /* FactoryKit */,
 			);
 			productName = iosApp;
 			productReference = 7F3A4411F71635494CAB3DCD /* ResumeCore.app */;
@@ -114,6 +120,9 @@
 			);
 			mainGroup = 8A9871A47E122C057F8FF7DE;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D51A2D3F2FB71CC400DC6E24 /* XCRemoteSwiftPackageReference "Factory" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3AD9BD21FBBF9E5F6488BE71 /* Products */;
 			projectDirPath = "";
@@ -368,6 +377,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D51A2D3F2FB71CC400DC6E24 /* XCRemoteSwiftPackageReference "Factory" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hmlongco/Factory";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D51A2D402FB71CC400DC6E24 /* FactoryKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D51A2D3F2FB71CC400DC6E24 /* XCRemoteSwiftPackageReference "Factory" */;
+			productName = FactoryKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6895EB438232DBADB940FE1E /* Project object */;
 }

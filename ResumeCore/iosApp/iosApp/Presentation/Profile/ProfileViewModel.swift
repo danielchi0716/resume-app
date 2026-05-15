@@ -1,3 +1,4 @@
+import FactoryKit
 import Foundation
 import Observation
 import Shared
@@ -11,8 +12,7 @@ final class ProfileViewModel {
     var education: LoadState<[Education]> = .loading
 
     @ObservationIgnored private var didLoad = false
-
-    private var service: ResumeService { ResumeServiceProvider.current }
+    @ObservationIgnored @Injected(\.resumeService) private var service
 
     func loadAll() {
         guard !didLoad else { return }

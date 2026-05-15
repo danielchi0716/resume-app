@@ -1,3 +1,4 @@
+import FactoryKit
 import Foundation
 import Observation
 import Shared
@@ -8,8 +9,7 @@ final class WorkViewModel {
     var work: LoadState<[WorkExperience]> = .loading
 
     @ObservationIgnored private var didLoad = false
-
-    private var service: ResumeService { ResumeServiceProvider.current }
+    @ObservationIgnored @Injected(\.resumeService) private var service
 
     func loadAll() {
         guard !didLoad else { return }
