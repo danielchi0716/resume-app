@@ -2,14 +2,14 @@ import SwiftUI
 import Shared
 
 struct WorkView: View {
-    var store: ResumeStore
+    @State private var viewModel = WorkViewModel()
     @State private var detailIndex: Int? = nil
     @Environment(\.hig) private var hig
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                resolveLoadState(store.work, retry: { Task { await store.loadWork() } }) { jobs in
+                resolveLoadState(viewModel.work, retry: { Task { await viewModel.loadWork() } }) { jobs in
                     StatStrip(jobs: jobs)
                     SectionHeaderText("section.work")
                     VStack(spacing: 12) {
@@ -24,10 +24,11 @@ struct WorkView: View {
         }
         .background(hig.systemGroupedBackground.ignoresSafeArea())
         .navigationDestination(item: $detailIndex) { idx in
-            if case .ready(let jobs) = store.work {
+            if case .ready(let jobs) = viewModel.work {
                 WorkDetailView(jobs: jobs, initialIndex: idx)
             }
         }
+        .onAppear { viewModel.loadAll() }
     }
 }
 

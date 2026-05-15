@@ -48,7 +48,7 @@ struct ErrorPanel: View {
 extension View {
     @ViewBuilder
     func resolveLoadState<T, Content: View>(
-        _ state: ResumeStore.LoadState<T>,
+        _ state: LoadState<T>,
         retry: @escaping () -> Void,
         @ViewBuilder content: (T) -> Content
     ) -> some View {

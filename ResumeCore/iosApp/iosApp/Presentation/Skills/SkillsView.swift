@@ -2,13 +2,13 @@ import SwiftUI
 import Shared
 
 struct SkillsView: View {
-    var store: ResumeStore
+    @State private var viewModel = SkillsViewModel()
     @Environment(\.hig) private var hig
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                resolveLoadState(store.skills, retry: { Task { await store.loadSkills() } }) { skills in
+                resolveLoadState(viewModel.skills, retry: { Task { await viewModel.loadSkills() } }) { skills in
                     IntroCard(skills: skills)
 
                     ForEach(Array(skills.enumerated()), id: \.offset) { _, skill in
@@ -28,6 +28,7 @@ struct SkillsView: View {
             }
         }
         .background(hig.systemGroupedBackground.ignoresSafeArea())
+        .onAppear { viewModel.loadAll() }
     }
 
     private func colorFor(name: String) -> Color {

@@ -2,18 +2,18 @@ import SwiftUI
 import Shared
 
 struct ProfileView: View {
-    var store: ResumeStore
+    @State private var viewModel = ProfileViewModel()
     @Environment(\.hig) private var hig
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                resolveLoadState(store.header, retry: { Task { await store.loadHeader() } }) { header in
+                resolveLoadState(viewModel.header, retry: { Task { await viewModel.loadHeader() } }) { header in
                     HeroCard(header: header)
                     QuickContacts(contacts: header.contacts)
                 }
 
-                resolveLoadState(store.languages, retry: { Task { await store.loadLanguages() } }) { langs in
+                resolveLoadState(viewModel.languages, retry: { Task { await viewModel.loadLanguages() } }) { langs in
                     SectionHeaderText("section.languages")
                     InsetCard {
                         VStack(spacing: 0) {
@@ -26,7 +26,7 @@ struct ProfileView: View {
 
                 Color.clear.frame(height: 28)
 
-                resolveLoadState(store.education, retry: { Task { await store.loadEducation() } }) { edus in
+                resolveLoadState(viewModel.education, retry: { Task { await viewModel.loadEducation() } }) { edus in
                     SectionHeaderText("section.education")
                     InsetCard {
                         VStack(spacing: 0) {
@@ -40,7 +40,7 @@ struct ProfileView: View {
 
                 Color.clear.frame(height: 28)
 
-                resolveLoadState(store.about, retry: { Task { await store.loadAbout() } }) { paragraphs in
+                resolveLoadState(viewModel.about, retry: { Task { await viewModel.loadAbout() } }) { paragraphs in
                     AboutSection(paragraphs: paragraphs)
                 }
 
@@ -48,6 +48,7 @@ struct ProfileView: View {
             }
         }
         .background(hig.systemGroupedBackground.ignoresSafeArea())
+        .onAppear { viewModel.loadAll() }
     }
 }
 

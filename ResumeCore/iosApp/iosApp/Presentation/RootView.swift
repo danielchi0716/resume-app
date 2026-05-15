@@ -25,7 +25,6 @@ enum RootTab: String, CaseIterable, Identifiable {
 }
 
 struct RootView: View {
-    @State private var store = ResumeStore()
     @State private var theme: ThemePreference = ThemePrefStore.current
     @State private var tab: RootTab = .profile
     @State private var menuOpen = false
@@ -56,7 +55,6 @@ struct RootView: View {
             .tint(HIGColors.light.tint) // overridden via env in screens
         }
         .higTheme(theme)
-        .onAppear { store.loadAll() }
         .confirmationDialog("sheet.title", isPresented: $menuOpen, titleVisibility: .visible) {
             Button("theme.light") { setTheme(.light) }
             Button("theme.dark") { setTheme(.dark) }
@@ -78,10 +76,10 @@ struct RootView: View {
     @ViewBuilder
     private func screen(for tab: RootTab) -> some View {
         switch tab {
-        case .profile: ProfileView(store: store)
-        case .work:    WorkView(store: store)
-        case .skills:  SkillsView(store: store)
-        case .more:    MoreView(store: store)
+        case .profile: ProfileView()
+        case .work:    WorkView()
+        case .skills:  SkillsView()
+        case .more:    MoreView()
         }
     }
 

@@ -2,13 +2,13 @@ import SwiftUI
 import Shared
 
 struct MoreView: View {
-    var store: ResumeStore
+    @State private var viewModel = MoreViewModel()
     @Environment(\.hig) private var hig
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                resolveLoadState(store.sideProjects, retry: { Task { await store.loadSideProjects() } }) { projects in
+                resolveLoadState(viewModel.sideProjects, retry: { Task { await viewModel.loadSideProjects() } }) { projects in
                     SectionHeaderText("section.side_projects")
                     VStack(spacing: 12) {
                         ForEach(Array(projects.enumerated()), id: \.offset) { idx, project in
@@ -27,7 +27,7 @@ struct MoreView: View {
 
                 Color.clear.frame(height: 24)
 
-                if case .ready(let header) = store.header {
+                if case .ready(let header) = viewModel.header {
                     SectionHeaderText("section.contact")
                     HStack(spacing: 12) {
                         ForEach(Array(header.contacts.enumerated()), id: \.offset) { _, contact in
@@ -42,6 +42,7 @@ struct MoreView: View {
             }
         }
         .background(hig.systemGroupedBackground.ignoresSafeArea())
+        .onAppear { viewModel.loadAll() }
     }
 }
 
