@@ -69,11 +69,6 @@ struct RootView: View {
                     UIApplication.shared.open(url)
                 }
             }
-            Button("sheet.open_web", systemImage: "safari") {
-                if let url = URL(string: AppConfig.resumeShareUrl) {
-                    UIApplication.shared.open(url)
-                }
-            }
         } label: {
             Image(systemName: "ellipsis")
                 .font(.system(size: 17, weight: .semibold))
