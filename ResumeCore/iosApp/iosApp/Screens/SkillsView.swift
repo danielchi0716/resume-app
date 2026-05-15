@@ -2,7 +2,7 @@ import SwiftUI
 import Shared
 
 struct SkillsView: View {
-    @ObservedObject var store: ResumeStore
+    var store: ResumeStore
     @Environment(\.hig) private var hig
 
     var body: some View {

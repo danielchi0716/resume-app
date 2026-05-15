@@ -1,9 +1,11 @@
 import Foundation
+import Observation
 import SwiftUI
 import Shared
 
 @MainActor
-final class ResumeStore: ObservableObject {
+@Observable
+final class ResumeStore {
 
     enum LoadState<T> {
         case loading
@@ -11,14 +13,14 @@ final class ResumeStore: ObservableObject {
         case error(String)
     }
 
-    @Published var header: LoadState<Header> = .loading
-    @Published var about: LoadState<[String]> = .loading
-    @Published var languages: LoadState<[Language]> = .loading
-    @Published var education: LoadState<[Education]> = .loading
-    @Published var work: LoadState<[WorkExperience]> = .loading
-    @Published var skills: LoadState<[Skill]> = .loading
-    @Published var sideProjects: LoadState<[SideProject]> = .loading
-    @Published var meta: LoadState<Meta> = .loading
+    var header: LoadState<Header> = .loading
+    var about: LoadState<[String]> = .loading
+    var languages: LoadState<[Language]> = .loading
+    var education: LoadState<[Education]> = .loading
+    var work: LoadState<[WorkExperience]> = .loading
+    var skills: LoadState<[Skill]> = .loading
+    var sideProjects: LoadState<[SideProject]> = .loading
+    var meta: LoadState<Meta> = .loading
 
     private let locale: Shared.Locale = AppLocale.current == .zh ? .traditionalchinese : .english
 

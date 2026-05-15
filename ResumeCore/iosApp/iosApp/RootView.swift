@@ -25,7 +25,7 @@ enum RootTab: String, CaseIterable, Identifiable {
 }
 
 struct RootView: View {
-    @StateObject private var store = ResumeStore()
+    @State private var store = ResumeStore()
     @State private var theme: ThemePreference = ThemePrefStore.current
     @State private var tab: RootTab = .profile
     @State private var menuOpen = false

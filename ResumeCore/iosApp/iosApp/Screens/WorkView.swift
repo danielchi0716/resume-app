@@ -2,7 +2,7 @@ import SwiftUI
 import Shared
 
 struct WorkView: View {
-    @ObservedObject var store: ResumeStore
+    var store: ResumeStore
     @State private var detailIndex: Int? = nil
     @Environment(\.hig) private var hig
 
