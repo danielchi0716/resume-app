@@ -1,5 +1,5 @@
-import SwiftUI
 import Shared
+import SwiftUI
 
 struct ProfileView: View {
     @State private var viewModel = ProfileViewModel()
@@ -27,8 +27,11 @@ struct ProfileView: View {
                     InsetCard {
                         VStack(spacing: 0) {
                             ForEach(Array(data.education.enumerated()), id: \.offset) { idx, edu in
-                                EducationRow(edu: edu, accent: idx == 0 ? hig.purple : hig.brown,
-                                             isLast: idx == data.education.count - 1)
+                                EducationRow(
+                                    edu: edu,
+                                    accent: idx == 0 ? hig.purple : hig.brown,
+                                    isLast: idx == data.education.count - 1
+                                )
                             }
                         }
                     }
@@ -180,19 +183,19 @@ private struct LanguageRow: View {
     @Environment(\.hig) private var hig
 
     var body: some View {
-        let title: Text = switch language.code {
+        let title = switch language.code {
         case .zh: Text("language.zh")
         case .en: Text("language.en")
         }
 
-        let subtitle: Text = switch onEnum(of: language.level) {
+        let subtitle = switch onEnum(of: language.level) {
         case .native:
             Text("language.level.native")
         case .proficiency(let p):
             Text("language.axis.listening") + Text(" ") + Text(skillKey(for: p.listening))
-            + Text(" · ") + Text("language.axis.speaking") + Text(" ") + Text(skillKey(for: p.speaking))
-            + Text(" · ") + Text("language.axis.reading")  + Text(" ") + Text(skillKey(for: p.reading))
-            + Text(" · ") + Text("language.axis.writing")  + Text(" ") + Text(skillKey(for: p.writing))
+                + Text(" · ") + Text("language.axis.speaking") + Text(" ") + Text(skillKey(for: p.speaking))
+                + Text(" · ") + Text("language.axis.reading") + Text(" ") + Text(skillKey(for: p.reading))
+                + Text(" · ") + Text("language.axis.writing") + Text(" ") + Text(skillKey(for: p.writing))
         }
 
         return HStack(spacing: 12) {
@@ -230,10 +233,10 @@ private struct LanguageRow: View {
 
     private func skillKey(for skill: LanguageSkill) -> LocalizedStringKey {
         switch skill {
-        case .basic:        "language.skill.basic"
+        case .basic: "language.skill.basic"
         case .intermediate: "language.skill.intermediate"
-        case .advanced:     "language.skill.advanced"
-        case .fluent:       "language.skill.fluent"
+        case .advanced: "language.skill.advanced"
+        case .fluent: "language.skill.fluent"
         }
     }
 
@@ -274,7 +277,7 @@ private struct EducationRow: View {
     @Environment(\.hig) private var hig
 
     var body: some View {
-        let endText: Text = if let end = edu.period.end {
+        let endText = if let end = edu.period.end {
             Text(verbatim: end.formatted)
         } else {
             Text("period.present")
@@ -311,7 +314,9 @@ private struct AboutSection: View {
     @State private var expanded = false
     @Environment(\.hig) private var hig
 
-    private var canToggle: Bool { paragraphs.count > 1 }
+    private var canToggle: Bool {
+        paragraphs.count > 1
+    }
 
     private var visibleParagraphs: [String] {
         expanded || !canToggle ? paragraphs : Array(paragraphs.prefix(1))
