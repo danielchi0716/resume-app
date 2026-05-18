@@ -195,24 +195,37 @@ private struct LanguageRow: View {
             + Text(" · ") + Text("language.axis.writing")  + Text(" ") + Text(skillKey(for: p.writing))
         }
 
-        return ListRow(
-            title: title,
-            subtitle: subtitle,
-            isLast: isLast,
-            leading: {
-                switch onEnum(of: language.level) {
-                case .native:
-                    Glyph(systemImage: "character.book.closed.fill", background: hig.red)
-                case .proficiency:
-                    Glyph(systemImage: "globe", background: hig.blue)
-                }
-            },
-            trailing: {
-                if let badge = language.badge {
-                    GoldBadge(text: badge)
-                }
+        return HStack(spacing: 12) {
+            switch onEnum(of: language.level) {
+            case .native:
+                Glyph(systemImage: "character.book.closed.fill", background: hig.red)
+            case .proficiency:
+                Glyph(systemImage: "globe", background: hig.blue)
             }
-        )
+            VStack(alignment: .leading, spacing: 2) {
+                title
+                    .font(HIGType.body)
+                    .foregroundColor(hig.label)
+                subtitle
+                    .font(HIGType.footnote)
+                    .foregroundColor(hig.secondaryLabel)
+            }
+            Spacer(minLength: 8)
+            if let badge = language.badge {
+                GoldBadge(text: badge)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .frame(minHeight: 56)
+        .overlay(alignment: .bottom) {
+            if !isLast {
+                Rectangle()
+                    .fill(hig.separator.opacity(0.5))
+                    .frame(height: 0.5)
+                    .padding(.leading, 60)
+            }
+        }
     }
 
     private func skillKey(for skill: LanguageSkill) -> LocalizedStringKey {
@@ -258,18 +271,38 @@ private struct EducationRow: View {
     let edu: Education
     let accent: Color
     let isLast: Bool
+    @Environment(\.hig) private var hig
 
     var body: some View {
-        let endLabel = edu.period.end?.formatted ?? String(localized: "period.present")
-        let subtitle = "\(edu.major) · \(edu.period.start.formatted) ─ \(endLabel)"
-        ListRow(
-            title: Text(verbatim: edu.school),
-            subtitle: Text(verbatim: subtitle),
-            isLast: isLast,
-            leading: {
-                Glyph(systemImage: "graduationcap.fill", background: accent)
+        let endText: Text = if let end = edu.period.end {
+            Text(verbatim: end.formatted)
+        } else {
+            Text("period.present")
+        }
+        let subtitle = Text(verbatim: "\(edu.major) · \(edu.period.start.formatted) ─ ") + endText
+        return HStack(spacing: 12) {
+            Glyph(systemImage: "graduationcap.fill", background: accent)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: edu.school)
+                    .font(HIGType.body)
+                    .foregroundColor(hig.label)
+                subtitle
+                    .font(HIGType.footnote)
+                    .foregroundColor(hig.secondaryLabel)
             }
-        )
+            Spacer(minLength: 8)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .frame(minHeight: 56)
+        .overlay(alignment: .bottom) {
+            if !isLast {
+                Rectangle()
+                    .fill(hig.separator.opacity(0.5))
+                    .frame(height: 0.5)
+                    .padding(.leading, 60)
+            }
+        }
     }
 }
 
