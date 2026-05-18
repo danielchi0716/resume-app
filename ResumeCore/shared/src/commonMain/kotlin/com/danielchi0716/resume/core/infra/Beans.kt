@@ -30,6 +30,7 @@ internal data class ContactBean(
 @Serializable
 internal data class HeaderBean(
     val name: String,
+    val englishName: String,
     val subtitle: String,
     val tagline: TaglineBean,
     val photo: PhotoBean,

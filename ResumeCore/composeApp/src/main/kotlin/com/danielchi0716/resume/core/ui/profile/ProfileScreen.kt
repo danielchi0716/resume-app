@@ -118,12 +118,7 @@ private fun HeroCard(header: Header) {
             colorScheme.tertiaryContainer,
         ),
     )
-    val (firstName, secondName) = remember(header.name) {
-        val idx = header.name.indexOf(' ')
-        if (idx > 0) header.name.substring(0, idx) to header.name.substring(idx + 1)
-        else header.name to ""
-    }
-    val monogram = firstName.firstOrNull()?.toString() ?: "·"
+    val monogram = header.name.firstOrNull()?.toString() ?: "·"
 
     Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Surface(
@@ -150,18 +145,16 @@ private fun HeroCard(header: Header) {
                     )
                     Column {
                         Text(
-                            text = firstName,
+                            text = header.name,
                             style = MaterialTheme.typography.headlineSmall,
                             color = colorScheme.onPrimaryContainer,
                             fontWeight = FontWeight.Medium,
                         )
-                        if (secondName.isNotEmpty()) {
-                            Text(
-                                text = secondName,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
-                            )
-                        }
+                        Text(
+                            text = header.englishName,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
+                        )
                     }
                 }
                 Column {

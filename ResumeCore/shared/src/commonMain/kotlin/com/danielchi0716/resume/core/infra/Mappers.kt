@@ -48,6 +48,7 @@ private fun String.toContactType(): ContactType = when (this) {
 
 internal fun HeaderBean.toModel() = Header(
     name = name,
+    englishName = englishName,
     subtitle = subtitle,
     tagline = tagline.toModel(),
     photo = photo.toModel(),

@@ -51,6 +51,14 @@ body.error {
   letter-spacing: 2px;
 }
 
+.header .english-name {
+  font-size: 18px;
+  color: #ccd6f6;
+  margin-top: 4px;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
 .header .subtitle {
   font-size: 16px;
   color: #a8b2d1;

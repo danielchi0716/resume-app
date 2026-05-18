@@ -59,6 +59,7 @@ data class Contact(
 
 data class Header(
     val name: String,
+    val englishName: String,
     val subtitle: String,
     val tagline: Tagline,
     val photo: Photo,

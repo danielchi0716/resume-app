@@ -66,11 +66,15 @@ private struct HeroCard: View {
 
             VStack(spacing: 10) {
                 Avatar(photo: header.photo)
-                Text("\(header.name) · Daniel Chi")
+                Text(header.name)
                     .font(HIGType.title2)
                     .foregroundColor(hig.label)
                     .multilineTextAlignment(.center)
                     .padding(.top, 4)
+                Text(header.englishName)
+                    .font(HIGType.footnote)
+                    .foregroundColor(hig.secondaryLabel)
+                    .multilineTextAlignment(.center)
                 Text("\(header.subtitle) · \(header.tagline.text)")
                     .font(HIGType.subheadline)
                     .foregroundColor(hig.secondaryLabel)

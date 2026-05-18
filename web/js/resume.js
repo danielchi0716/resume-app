@@ -107,6 +107,7 @@ function periodLabel(period) {
 
 function renderHeader(data) {
   document.querySelector('.header h1').textContent = data.name;
+  document.querySelector('.header .english-name').textContent = data.englishName;
   document.querySelector('.header .subtitle').textContent = data.subtitle;
 
   const tagline = document.querySelector('.header .tagline');
