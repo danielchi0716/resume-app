@@ -25,7 +25,7 @@ enum RootTab: String, CaseIterable, Identifiable {
 }
 
 struct RootView: View {
-    @State private var theme: ThemePreference = ThemePrefStore.current
+    @AppStorage("resume_theme_preference") private var theme: ThemePreference = .system
     @State private var tab: RootTab = .profile
 
     var body: some View {
@@ -50,9 +50,6 @@ struct RootView: View {
             .tint(HIGColors.light.tint) // overridden via env in screens
         }
         .higTheme(theme)
-        .onChange(of: theme) { _, newValue in
-            ThemePrefStore.current = newValue
-        }
     }
 
     private var overflowMenu: some View {
