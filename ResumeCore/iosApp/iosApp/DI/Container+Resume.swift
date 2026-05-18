@@ -1,4 +1,5 @@
 import FactoryKit
+import Foundation
 import Shared
 
 extension Container {
@@ -7,7 +8,7 @@ extension Container {
     var sharedLocale: Factory<Shared.Locale> {
         self {
             let lang = (Bundle.main.preferredLocalizations.first ?? "en").lowercased()
-            return lang.hasPrefix("zh") ? .traditionalchinese : .english
+            return lang.hasPrefix("zh") ? .traditionalChinese : .english
         }
     }
 
