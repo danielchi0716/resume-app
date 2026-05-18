@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct ListRow<Leading: View, Trailing: View>: View {
-    var title: String
-    var subtitle: String? = nil
+    var title: Text
+    var subtitle: Text? = nil
     var detail: String? = nil
     var chevron: Bool = false
     var isLast: Bool = false
@@ -16,11 +16,11 @@ struct ListRow<Leading: View, Trailing: View>: View {
         HStack(spacing: 12) {
             leading()
             VStack(alignment: .leading, spacing: subtitle == nil ? 0 : 2) {
-                Text(title)
+                title
                     .font(HIGType.body)
                     .foregroundColor(hig.label)
                 if let subtitle {
-                    Text(subtitle)
+                    subtitle
                         .font(HIGType.footnote)
                         .foregroundColor(hig.secondaryLabel)
                 }
@@ -57,8 +57,8 @@ struct ListRow<Leading: View, Trailing: View>: View {
 
 extension ListRow where Trailing == EmptyView {
     init(
-        title: String,
-        subtitle: String? = nil,
+        title: Text,
+        subtitle: Text? = nil,
         detail: String? = nil,
         chevron: Bool = false,
         isLast: Bool = false,

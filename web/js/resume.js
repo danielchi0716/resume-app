@@ -11,6 +11,12 @@ const UI_LABELS = {
       languages: '語言能力 Languages',
       about: '自傳 About Me',
     },
+    language: {
+      names: { zh: '中文', en: '英文' },
+      native: '母語',
+      axes: { listening: '聽', speaking: '說', reading: '讀', writing: '寫' },
+      skills: { basic: '基礎', intermediate: '中級', advanced: '進階', fluent: '流利' },
+    },
   },
   en: {
     projectsLabel: 'Projects',
@@ -21,6 +27,12 @@ const UI_LABELS = {
       education: 'Education',
       languages: 'Languages',
       about: 'About Me',
+    },
+    language: {
+      names: { zh: 'Chinese', en: 'English' },
+      native: 'Native',
+      axes: { listening: 'Listen', speaking: 'Speak', reading: 'Read', writing: 'Write' },
+      skills: { basic: 'Basic', intermediate: 'Intermediate', advanced: 'Advanced', fluent: 'Fluent' },
     },
   },
 };
@@ -277,11 +289,22 @@ function renderLanguages(rootEl, languages, labels) {
   renderSectionTitle(rootEl, labels.sections.languages);
   languages.forEach(l => {
     const item = el('div', 'lang-item');
-    item.appendChild(el('span', 'lang-name', l.name));
-    item.appendChild(el('span', 'lang-level', l.level));
+    const name = labels.language.names[l.code] || l.code;
+    item.appendChild(el('span', 'lang-name', name));
+    item.appendChild(el('span', 'lang-level', formatLanguageLevel(l.level, labels.language)));
     if (l.badge) item.appendChild(el('span', 'lang-badge', l.badge));
     rootEl.appendChild(item);
   });
+}
+
+function formatLanguageLevel(level, labels) {
+  if (level.kind === 'native') return labels.native;
+  if (level.kind === 'proficiency') {
+    return ['listening', 'speaking', 'reading', 'writing']
+      .map(axis => `${labels.axes[axis]} ${labels.skills[level[axis]] || level[axis]}`)
+      .join(' · ');
+  }
+  return '';
 }
 
 function renderVersion(rootEl) {

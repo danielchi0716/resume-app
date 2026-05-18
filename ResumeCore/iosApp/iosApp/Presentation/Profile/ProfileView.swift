@@ -65,7 +65,7 @@ private struct HeroCard: View {
             .allowsHitTesting(false)
 
             VStack(spacing: 10) {
-                Avatar(photo: header.photo)
+                Avatar(photo: header.photo, monogram: initials(from: header.englishName))
                 Text(header.name)
                     .font(HIGType.title2)
                     .foregroundColor(hig.label)
@@ -91,8 +91,16 @@ private struct HeroCard: View {
         .padding(.bottom, 20)
     }
 
+    private func initials(from name: String) -> String {
+        name.split(separator: " ")
+            .compactMap { $0.first.map(String.init) }
+            .prefix(2)
+            .joined()
+    }
+
     private struct Avatar: View {
         let photo: Photo
+        let monogram: String
         @Environment(\.hig) private var hig
 
         private var resolvedURL: URL? {
@@ -108,11 +116,11 @@ private struct HeroCard: View {
                         case .success(let image):
                             image.resizable().scaledToFill()
                         default:
-                            monogram
+                            monogramView
                         }
                     }
                 } else {
-                    monogram
+                    monogramView
                 }
             }
             .frame(width: 92, height: 92)
@@ -121,14 +129,14 @@ private struct HeroCard: View {
             .accessibilityLabel(photo.alt)
         }
 
-        private var monogram: some View {
+        private var monogramView: some View {
             ZStack {
                 LinearGradient(
                     colors: [hig.tint, hig.indigo],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                Text("DC")
+                Text(monogram)
                     .font(.system(size: 36, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
             }
@@ -172,13 +180,32 @@ private struct LanguageRow: View {
     @Environment(\.hig) private var hig
 
     var body: some View {
-        ListRow(
-            title: language.name,
-            subtitle: language.level,
+        let title: Text = switch language.code {
+        case .zh: Text("language.zh")
+        case .en: Text("language.en")
+        }
+
+        let subtitle: Text = switch onEnum(of: language.level) {
+        case .native:
+            Text("language.level.native")
+        case .proficiency(let p):
+            Text("language.axis.listening") + Text(" ") + Text(skillKey(for: p.listening))
+            + Text(" · ") + Text("language.axis.speaking") + Text(" ") + Text(skillKey(for: p.speaking))
+            + Text(" · ") + Text("language.axis.reading")  + Text(" ") + Text(skillKey(for: p.reading))
+            + Text(" · ") + Text("language.axis.writing")  + Text(" ") + Text(skillKey(for: p.writing))
+        }
+
+        return ListRow(
+            title: title,
+            subtitle: subtitle,
             isLast: isLast,
             leading: {
-                Glyph(systemImage: language.name == "中文" ? "character.book.closed.fill" : "globe",
-                      background: language.name == "中文" ? hig.red : hig.blue)
+                switch onEnum(of: language.level) {
+                case .native:
+                    Glyph(systemImage: "character.book.closed.fill", background: hig.red)
+                case .proficiency:
+                    Glyph(systemImage: "globe", background: hig.blue)
+                }
             },
             trailing: {
                 if let badge = language.badge {
@@ -186,6 +213,44 @@ private struct LanguageRow: View {
                 }
             }
         )
+    }
+
+    private func skillKey(for skill: LanguageSkill) -> LocalizedStringKey {
+        switch skill {
+        case .basic:        "language.skill.basic"
+        case .intermediate: "language.skill.intermediate"
+        case .advanced:     "language.skill.advanced"
+        case .fluent:       "language.skill.fluent"
+        }
+    }
+
+    private struct GoldBadge: View {
+        let text: String
+        var body: some View {
+            HStack(spacing: 4) {
+                Image(systemName: "medal.fill")
+                    .font(.system(size: 13, weight: .semibold))
+                Text(text)
+                    .font(.system(size: 12, weight: .semibold))
+                    .tracking(0.3)
+            }
+            .foregroundColor(Color(hex: 0xFFFBE8))
+            .padding(.horizontal, 10)
+            .frame(height: 24)
+            .background(
+                LinearGradient(
+                    colors: [Color(hex: 0xC8A24A), Color(hex: 0xB0863A)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
+                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .strokeBorder(Color(hex: 0xB0863A).opacity(0.5), lineWidth: 0.5)
+            )
+            .shadow(color: Color(hex: 0xB0863A).opacity(0.25), radius: 1, y: 1)
+        }
     }
 }
 
@@ -198,8 +263,8 @@ private struct EducationRow: View {
         let endLabel = edu.period.end?.formatted ?? String(localized: "period.present")
         let subtitle = "\(edu.major) · \(edu.period.start.formatted) ─ \(endLabel)"
         ListRow(
-            title: edu.school,
-            subtitle: subtitle,
+            title: Text(verbatim: edu.school),
+            subtitle: Text(verbatim: subtitle),
             isLast: isLast,
             leading: {
                 Glyph(systemImage: "graduationcap.fill", background: accent)

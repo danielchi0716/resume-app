@@ -27,32 +27,3 @@ struct TagView: View {
     }
 }
 
-/// Gold-tinted award badge used for TOEIC etc.
-struct GoldBadge: View {
-    let text: String
-    var body: some View {
-        HStack(spacing: 4) {
-            Image(systemName: "medal.fill")
-                .font(.system(size: 13, weight: .semibold))
-            Text(text)
-                .font(.system(size: 12, weight: .semibold))
-                .tracking(0.3)
-        }
-        .foregroundColor(Color(hex: 0xFFFBE8))
-        .padding(.horizontal, 10)
-        .frame(height: 24)
-        .background(
-            LinearGradient(
-                colors: [Color(hex: 0xC8A24A), Color(hex: 0xB0863A)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            ),
-            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .strokeBorder(Color(hex: 0xB0863A).opacity(0.5), lineWidth: 0.5)
-        )
-        .shadow(color: Color(hex: 0xB0863A).opacity(0.25), radius: 1, y: 1)
-    }
-}

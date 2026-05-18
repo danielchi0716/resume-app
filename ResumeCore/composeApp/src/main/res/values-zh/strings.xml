@@ -83,4 +83,19 @@
     <string name="label_phone">電話</string>
     <string name="label_github">GitHub</string>
     <string name="label_linkedin">LinkedIn</string>
+
+    <!-- Languages: display names -->
+    <string name="language_zh">中文</string>
+    <string name="language_en">英文</string>
+
+    <!-- Languages: level / skill labels -->
+    <string name="language_level_native">母語</string>
+    <string name="language_skill_basic">基礎</string>
+    <string name="language_skill_intermediate">中級</string>
+    <string name="language_skill_advanced">進階</string>
+    <string name="language_skill_fluent">流利</string>
+    <string name="language_skill_listening">聽</string>
+    <string name="language_skill_speaking">說</string>
+    <string name="language_skill_reading">讀</string>
+    <string name="language_skill_writing">寫</string>
 </resources>

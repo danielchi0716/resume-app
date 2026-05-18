@@ -113,7 +113,16 @@ internal data class EducationBean(
 
 @Serializable
 internal data class LanguageBean(
-    val name: String,
-    val level: String,
+    val code: String,
+    val level: LanguageLevelBean,
     val badge: String? = null,
+)
+
+@Serializable
+internal data class LanguageLevelBean(
+    val kind: String,
+    val listening: String? = null,
+    val speaking: String? = null,
+    val reading: String? = null,
+    val writing: String? = null,
 )

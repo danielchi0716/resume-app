@@ -151,8 +151,46 @@ data class Education(
     val period: Period,
 )
 
+enum class LanguageCode(val raw: String) {
+    ZH("zh"),
+    EN("en");
+
+    companion object {
+        fun from(raw: String): LanguageCode =
+            entries.firstOrNull { it.raw == raw }
+                ?: error("Unknown language code: $raw")
+    }
+}
+
+enum class LanguageSkill {
+    BASIC,
+    INTERMEDIATE,
+    ADVANCED,
+    FLUENT;
+
+    companion object {
+        fun from(raw: String): LanguageSkill = when (raw) {
+            "basic"        -> BASIC
+            "intermediate" -> INTERMEDIATE
+            "advanced"     -> ADVANCED
+            "fluent"       -> FLUENT
+            else           -> error("Unknown language skill: $raw")
+        }
+    }
+}
+
+sealed class LanguageLevel {
+    data object Native : LanguageLevel()
+    data class Proficiency(
+        val listening: LanguageSkill,
+        val speaking: LanguageSkill,
+        val reading: LanguageSkill,
+        val writing: LanguageSkill,
+    ) : LanguageLevel()
+}
+
 data class Language(
-    val name: String,
-    val level: String,
+    val code: LanguageCode,
+    val level: LanguageLevel,
     val badge: String? = null,
 )

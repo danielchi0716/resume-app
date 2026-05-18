@@ -83,4 +83,19 @@
     <string name="label_phone">Phone</string>
     <string name="label_github">GitHub</string>
     <string name="label_linkedin">LinkedIn</string>
+
+    <!-- Languages: display names -->
+    <string name="language_zh">Chinese</string>
+    <string name="language_en">English</string>
+
+    <!-- Languages: level / skill labels -->
+    <string name="language_level_native">Native</string>
+    <string name="language_skill_basic">Basic</string>
+    <string name="language_skill_intermediate">Intermediate</string>
+    <string name="language_skill_advanced">Advanced</string>
+    <string name="language_skill_fluent">Fluent</string>
+    <string name="language_skill_listening">Listen</string>
+    <string name="language_skill_speaking">Speak</string>
+    <string name="language_skill_reading">Read</string>
+    <string name="language_skill_writing">Write</string>
 </resources>

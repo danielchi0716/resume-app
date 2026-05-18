@@ -8,6 +8,9 @@ import com.danielchi0716.resume.core.model.Education
 import com.danielchi0716.resume.core.model.Header
 import com.danielchi0716.resume.core.model.Labels
 import com.danielchi0716.resume.core.model.Language
+import com.danielchi0716.resume.core.model.LanguageCode
+import com.danielchi0716.resume.core.model.LanguageLevel
+import com.danielchi0716.resume.core.model.LanguageSkill
 import com.danielchi0716.resume.core.model.Meta
 import com.danielchi0716.resume.core.model.Period
 import com.danielchi0716.resume.core.model.Photo
@@ -130,4 +133,19 @@ internal fun EducationBean.toModel() = Education(
     period = period.toModel(),
 )
 
-internal fun LanguageBean.toModel() = Language(name, level, badge)
+internal fun LanguageBean.toModel() = Language(
+    code = LanguageCode.from(code),
+    level = level.toModel(),
+    badge = badge,
+)
+
+internal fun LanguageLevelBean.toModel(): LanguageLevel = when (kind) {
+    "native" -> LanguageLevel.Native
+    "proficiency" -> LanguageLevel.Proficiency(
+        listening = LanguageSkill.from(requireNotNull(listening) { "missing listening" }),
+        speaking = LanguageSkill.from(requireNotNull(speaking) { "missing speaking" }),
+        reading = LanguageSkill.from(requireNotNull(reading) { "missing reading" }),
+        writing = LanguageSkill.from(requireNotNull(writing) { "missing writing" }),
+    )
+    else -> error("Unknown language level kind: $kind")
+}

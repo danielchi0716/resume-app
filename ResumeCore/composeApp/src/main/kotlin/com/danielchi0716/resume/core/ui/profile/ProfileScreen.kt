@@ -59,6 +59,9 @@ import com.danielchi0716.resume.core.ResumeCore
 import com.danielchi0716.resume.core.model.Education
 import com.danielchi0716.resume.core.model.Header
 import com.danielchi0716.resume.core.model.Language
+import com.danielchi0716.resume.core.model.LanguageCode
+import com.danielchi0716.resume.core.model.LanguageLevel
+import com.danielchi0716.resume.core.model.LanguageSkill
 import com.danielchi0716.resume.core.model.Photo
 import com.danielchi0716.resume.core.ui.common.UiState
 import com.danielchi0716.resume.core.resolveUrl
@@ -256,7 +259,7 @@ private fun LanguagesSection(languages: List<Language>) {
                     ) {
                         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                             Icon(
-                                imageVector = if (l.name.contains("中") || l.name.contains("Chinese")) {
+                                imageVector = if (l.level is LanguageLevel.Native) {
                                     Icons.Filled.Translate
                                 } else {
                                     Icons.Filled.Language
@@ -267,12 +270,12 @@ private fun LanguagesSection(languages: List<Language>) {
                     }
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = l.name,
+                            text = stringResource(l.code.displayNameRes),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
-                            text = l.level,
+                            text = l.level.display(),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 2.dp),
@@ -442,5 +445,31 @@ private fun PremiumBadge(text: String) {
             fontWeight = FontWeight.SemiBold,
             letterSpacing = 0.4.sp,
         )
+    }
+}
+
+private val LanguageCode.displayNameRes: Int
+    get() = when (this) {
+        LanguageCode.ZH -> R.string.language_zh
+        LanguageCode.EN -> R.string.language_en
+    }
+
+private val LanguageSkill.labelRes: Int
+    get() = when (this) {
+        LanguageSkill.BASIC        -> R.string.language_skill_basic
+        LanguageSkill.INTERMEDIATE -> R.string.language_skill_intermediate
+        LanguageSkill.ADVANCED     -> R.string.language_skill_advanced
+        LanguageSkill.FLUENT       -> R.string.language_skill_fluent
+    }
+
+@Composable
+private fun LanguageLevel.display(): String = when (this) {
+    LanguageLevel.Native -> stringResource(R.string.language_level_native)
+    is LanguageLevel.Proficiency -> {
+        val l = "${stringResource(R.string.language_skill_listening)} ${stringResource(listening.labelRes)}"
+        val s = "${stringResource(R.string.language_skill_speaking)} ${stringResource(speaking.labelRes)}"
+        val r = "${stringResource(R.string.language_skill_reading)} ${stringResource(reading.labelRes)}"
+        val w = "${stringResource(R.string.language_skill_writing)} ${stringResource(writing.labelRes)}"
+        "$l · $s · $r · $w"
     }
 }
