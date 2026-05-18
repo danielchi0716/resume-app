@@ -7,38 +7,36 @@ struct MoreView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                resolveLoadState(viewModel.sideProjects, retry: { Task { await viewModel.loadSideProjects() } }) { projects in
+            resolveLoadState(viewModel.state, retry: { Task { await viewModel.load() } }) { data in
+                VStack(alignment: .leading, spacing: 0) {
                     SectionHeaderText("section.side_projects")
                     VStack(spacing: 12) {
-                        ForEach(Array(projects.enumerated()), id: \.offset) { idx, project in
+                        ForEach(Array(data.sideProjects.enumerated()), id: \.offset) { idx, project in
                             SideProjectCard(project: project,
                                             accent: idx == 0 ? hig.green : hig.purple,
                                             idx: idx)
                         }
                     }
                     .padding(.horizontal, 16)
-                }
 
-                Color.clear.frame(height: 28)
+                    Color.clear.frame(height: 28)
 
-                ClosingCard()
-                    .padding(.horizontal, 16)
+                    ClosingCard()
+                        .padding(.horizontal, 16)
 
-                Color.clear.frame(height: 24)
+                    Color.clear.frame(height: 24)
 
-                if case .ready(let header) = viewModel.header {
                     SectionHeaderText("section.contact")
                     HStack(spacing: 12) {
-                        ForEach(Array(header.contacts.enumerated()), id: \.offset) { _, contact in
+                        ForEach(Array(data.header.contacts.enumerated()), id: \.offset) { _, contact in
                             ContactButton(contact: contact)
                                 .frame(maxWidth: .infinity)
                         }
                     }
                     .padding(.horizontal, 24)
-                }
 
-                Footer()
+                    Footer()
+                }
             }
         }
         .background(hig.systemGroupedBackground.ignoresSafeArea())

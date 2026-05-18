@@ -3,12 +3,15 @@ import Foundation
 import Observation
 import Shared
 
+struct MoreData {
+    let sideProjects: [SideProject]
+    let header: Header
+}
+
 @MainActor
 @Observable
 final class MoreViewModel {
-    var sideProjects: LoadState<[SideProject]> = .loading
-    /// MoreView reads `header.contacts` for the contact buttons.
-    var header: LoadState<Header> = .loading
+    var state: LoadState<MoreData> = .loading
 
     @ObservationIgnored private var didLoad = false
     @ObservationIgnored @Injected(\.resumeService) private var service
@@ -16,25 +19,20 @@ final class MoreViewModel {
     func loadAll() {
         guard !didLoad else { return }
         didLoad = true
-        Task { await loadSideProjects() }
-        Task { await loadHeader() }
+        Task { await load() }
     }
 
-    func loadSideProjects() async {
-        sideProjects = .loading
+    func load() async {
+        state = .loading
         do {
-            sideProjects = .ready(try await service.getSideProjects())
+            async let sideProjects = service.getSideProjects()
+            async let header = service.getHeader()
+            state = .ready(MoreData(
+                sideProjects: try await sideProjects,
+                header: try await header
+            ))
         } catch {
-            sideProjects = .error(error.localizedDescription)
-        }
-    }
-
-    func loadHeader() async {
-        header = .loading
-        do {
-            header = .ready(try await service.getHeader())
-        } catch {
-            header = .error(error.localizedDescription)
+            state = .error(error.localizedDescription)
         }
     }
 }

@@ -3,13 +3,17 @@ import Foundation
 import Observation
 import Shared
 
+struct ProfileData {
+    let header: Header
+    let about: [String]
+    let languages: [Language]
+    let education: [Education]
+}
+
 @MainActor
 @Observable
 final class ProfileViewModel {
-    var header: LoadState<Header> = .loading
-    var about: LoadState<[String]> = .loading
-    var languages: LoadState<[Language]> = .loading
-    var education: LoadState<[Education]> = .loading
+    var state: LoadState<ProfileData> = .loading
 
     @ObservationIgnored private var didLoad = false
     @ObservationIgnored @Injected(\.resumeService) private var service
@@ -17,45 +21,24 @@ final class ProfileViewModel {
     func loadAll() {
         guard !didLoad else { return }
         didLoad = true
-        Task { await loadHeader() }
-        Task { await loadAbout() }
-        Task { await loadLanguages() }
-        Task { await loadEducation() }
+        Task { await load() }
     }
 
-    func loadHeader() async {
-        header = .loading
+    func load() async {
+        state = .loading
         do {
-            header = .ready(try await service.getHeader())
+            async let header = service.getHeader()
+            async let about = service.getAbout()
+            async let languages = service.getLanguages()
+            async let education = service.getEducation()
+            state = .ready(ProfileData(
+                header: try await header,
+                about: try await about,
+                languages: try await languages,
+                education: try await education
+            ))
         } catch {
-            header = .error(error.localizedDescription)
-        }
-    }
-
-    func loadAbout() async {
-        about = .loading
-        do {
-            about = .ready(try await service.getAbout())
-        } catch {
-            about = .error(error.localizedDescription)
-        }
-    }
-
-    func loadLanguages() async {
-        languages = .loading
-        do {
-            languages = .ready(try await service.getLanguages())
-        } catch {
-            languages = .error(error.localizedDescription)
-        }
-    }
-
-    func loadEducation() async {
-        education = .loading
-        do {
-            education = .ready(try await service.getEducation())
-        } catch {
-            education = .error(error.localizedDescription)
+            state = .error(error.localizedDescription)
         }
     }
 }

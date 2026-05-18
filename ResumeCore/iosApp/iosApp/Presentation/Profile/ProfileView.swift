@@ -7,44 +7,38 @@ struct ProfileView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                resolveLoadState(viewModel.header, retry: { Task { await viewModel.loadHeader() } }) { header in
-                    HeroCard(header: header)
-                    QuickContacts(contacts: header.contacts)
-                }
+            resolveLoadState(viewModel.state, retry: { Task { await viewModel.load() } }) { data in
+                VStack(alignment: .leading, spacing: 0) {
+                    HeroCard(header: data.header)
+                    QuickContacts(contacts: data.header.contacts)
 
-                resolveLoadState(viewModel.languages, retry: { Task { await viewModel.loadLanguages() } }) { langs in
                     SectionHeaderText("section.languages")
                     InsetCard {
                         VStack(spacing: 0) {
-                            ForEach(Array(langs.enumerated()), id: \.offset) { idx, lang in
-                                LanguageRow(language: lang, isLast: idx == langs.count - 1)
+                            ForEach(Array(data.languages.enumerated()), id: \.offset) { idx, lang in
+                                LanguageRow(language: lang, isLast: idx == data.languages.count - 1)
                             }
                         }
                     }
-                }
 
-                Color.clear.frame(height: 28)
+                    Color.clear.frame(height: 28)
 
-                resolveLoadState(viewModel.education, retry: { Task { await viewModel.loadEducation() } }) { edus in
                     SectionHeaderText("section.education")
                     InsetCard {
                         VStack(spacing: 0) {
-                            ForEach(Array(edus.enumerated()), id: \.offset) { idx, edu in
+                            ForEach(Array(data.education.enumerated()), id: \.offset) { idx, edu in
                                 EducationRow(edu: edu, accent: idx == 0 ? hig.purple : hig.brown,
-                                             isLast: idx == edus.count - 1)
+                                             isLast: idx == data.education.count - 1)
                             }
                         }
                     }
+
+                    Color.clear.frame(height: 28)
+
+                    AboutSection(paragraphs: data.about)
+
+                    Color.clear.frame(height: 24)
                 }
-
-                Color.clear.frame(height: 28)
-
-                resolveLoadState(viewModel.about, retry: { Task { await viewModel.loadAbout() } }) { paragraphs in
-                    AboutSection(paragraphs: paragraphs)
-                }
-
-                Color.clear.frame(height: 24)
             }
         }
         .background(hig.systemGroupedBackground.ignoresSafeArea())
