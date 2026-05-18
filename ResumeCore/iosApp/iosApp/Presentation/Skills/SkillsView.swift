@@ -8,7 +8,7 @@ struct SkillsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                resolveLoadState(viewModel.skills, retry: { Task { await viewModel.loadSkills() } }) { skills in
+                LoadStateView(state: viewModel.skills, retry: { Task { await viewModel.loadSkills() } }) { skills in
                     IntroCard(skills: skills)
 
                     ForEach(Array(skills.enumerated()), id: \.offset) { _, skill in

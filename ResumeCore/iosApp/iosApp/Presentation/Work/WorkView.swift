@@ -9,7 +9,7 @@ struct WorkView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                resolveLoadState(viewModel.work, retry: { Task { await viewModel.loadWork() } }) { jobs in
+                LoadStateView(state: viewModel.work, retry: { Task { await viewModel.loadWork() } }) { jobs in
                     StatStrip(jobs: jobs)
                     SectionHeaderText("section.work")
                     VStack(spacing: 12) {

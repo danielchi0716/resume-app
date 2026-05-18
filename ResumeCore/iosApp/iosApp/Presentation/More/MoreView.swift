@@ -7,7 +7,7 @@ struct MoreView: View {
 
     var body: some View {
         ScrollView {
-            resolveLoadState(viewModel.state, retry: { Task { await viewModel.load() } }) { data in
+            LoadStateView(state: viewModel.state, retry: { Task { await viewModel.load() } }) { data in
                 VStack(alignment: .leading, spacing: 0) {
                     SectionHeaderText("section.side_projects")
                     VStack(spacing: 12) {

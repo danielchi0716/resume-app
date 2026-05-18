@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct LoadingPanel: View {
+fileprivate struct LoadingPanel: View {
     @Environment(\.hig) private var hig
     var body: some View {
         VStack(spacing: 12) {
@@ -13,7 +13,7 @@ struct LoadingPanel: View {
     }
 }
 
-struct ErrorPanel: View {
+fileprivate struct ErrorPanel: View {
     let message: String
     let onRetry: () -> Void
 
@@ -45,13 +45,12 @@ struct ErrorPanel: View {
     }
 }
 
-extension View {
-    @ViewBuilder
-    func resolveLoadState<T, Content: View>(
-        _ state: LoadState<T>,
-        retry: @escaping () -> Void,
-        @ViewBuilder content: (T) -> Content
-    ) -> some View {
+struct LoadStateView<T, Content: View>: View {
+    let state: LoadState<T>
+    let retry: () -> Void
+    @ViewBuilder let content: (T) -> Content
+
+    var body: some View {
         switch state {
         case .loading: LoadingPanel()
         case .error(let msg): ErrorPanel(message: msg, onRetry: retry)

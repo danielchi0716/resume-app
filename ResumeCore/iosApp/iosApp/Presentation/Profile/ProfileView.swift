@@ -7,7 +7,7 @@ struct ProfileView: View {
 
     var body: some View {
         ScrollView {
-            resolveLoadState(viewModel.state, retry: { Task { await viewModel.load() } }) { data in
+            LoadStateView(state: viewModel.state, retry: { Task { await viewModel.load() } }) { data in
                 VStack(alignment: .leading, spacing: 0) {
                     HeroCard(header: data.header)
                     QuickContacts(contacts: data.header.contacts)
