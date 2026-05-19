@@ -30,7 +30,6 @@
     <!-- Work -->
     <string name="action_view_detail">查看詳細</string>
     <string name="work_detail_title">工作詳情</string>
-    <string name="swipe_hint">左右滑動切換</string>
     <string name="stat_total_years">總年資</string>
     <string name="stat_companies">間公司</string>
     <string name="stat_projects">主要專案</string>

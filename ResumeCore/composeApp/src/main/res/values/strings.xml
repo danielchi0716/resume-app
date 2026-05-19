@@ -30,7 +30,6 @@
     <!-- Work -->
     <string name="action_view_detail">View detail</string>
     <string name="work_detail_title">Work Detail</string>
-    <string name="swipe_hint">Swipe to switch</string>
     <string name="stat_total_years">years</string>
     <string name="stat_companies">companies</string>
     <string name="stat_projects">projects</string>

@@ -141,27 +141,13 @@ private fun WorkDetailContent(jobs: List<WorkExperience>, pagerState: PagerState
             pagerState = pagerState,
             onTabClick = { i -> scope.launch { pagerState.animateScrollToPage(i) } },
         )
-        Box(modifier = Modifier.weight(1f)) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize(),
-            ) { page ->
-                JobPage(job = jobs[page], idx = page)
-            }
-            Surface(
-                color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.92f),
-                contentColor = MaterialTheme.colorScheme.inverseOnSurface,
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp),
-            ) {
-                Text(
-                    text = "← ${stringResource(R.string.swipe_hint)} →",
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-                )
-            }
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize(),
+        ) { page ->
+            JobPage(job = jobs[page], idx = page)
         }
     }
 }
