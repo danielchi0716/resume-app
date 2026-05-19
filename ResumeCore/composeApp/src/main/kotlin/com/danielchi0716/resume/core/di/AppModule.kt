@@ -2,8 +2,11 @@ package com.danielchi0716.resume.core.di
 
 import android.content.Context
 import androidx.core.app.LocaleManagerCompat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.danielchi0716.resume.core.ResumeCore
 import com.danielchi0716.resume.core.ResumeService
+import com.danielchi0716.resume.core.data.appDataStore
 import com.danielchi0716.resume.core.model.Locale
 import com.danielchi0716.resume.core.service
 import dagger.Module
@@ -11,6 +14,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import java.util.Locale as JavaLocale
 
 @Module
@@ -31,4 +35,9 @@ object AppModule {
         val locale = if (lang.equals("zh", ignoreCase = true)) Locale.TraditionalChinese else Locale.English
         return ResumeCore.service(locale)
     }
+
+    @Provides
+    @Singleton
+    fun provideAppDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
+        context.appDataStore
 }

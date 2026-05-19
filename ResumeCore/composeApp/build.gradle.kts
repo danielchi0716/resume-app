@@ -110,6 +110,7 @@ dependencies {
     implementation(libs.androidx.material.iconsExtended)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.coil.network.okhttp)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigationCompose)

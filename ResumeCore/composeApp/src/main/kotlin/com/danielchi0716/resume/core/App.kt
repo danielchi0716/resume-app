@@ -28,6 +28,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.os.LocaleListCompat
-import com.danielchi0716.resume.core.data.AppPreferences
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.danielchi0716.resume.core.model.Locale
 import com.danielchi0716.resume.core.ui.common.AppActions
 import com.danielchi0716.resume.core.ui.common.LocalAppActions
@@ -67,17 +68,11 @@ private enum class Tab(
 @Preview
 @Composable
 fun App() {
-    val context = LocalContext.current
-    val prefs = remember(context) { AppPreferences(context) }
-    var themeMode by remember { mutableStateOf(prefs.themeMode) }
+    val appVm: AppViewModel = hiltViewModel()
+    val themeMode by appVm.themeMode.collectAsState()
 
     ResumeTheme(themeMode = themeMode) {
-        ResumeRoot(
-            onThemeChange = {
-                themeMode = it
-                prefs.themeMode = it
-            },
-        )
+        ResumeRoot(onThemeChange = appVm::setThemeMode)
     }
 }
 
