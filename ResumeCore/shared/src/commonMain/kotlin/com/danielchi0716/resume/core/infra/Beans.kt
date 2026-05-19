@@ -99,7 +99,6 @@ internal data class SkillSubcategoryBean(
 internal data class SkillBean(
     val id: String,
     val type: String,
-    val name: String,
     val subcategories: List<SkillSubcategoryBean> = emptyList(),
     val tags: List<String> = emptyList(),
 )

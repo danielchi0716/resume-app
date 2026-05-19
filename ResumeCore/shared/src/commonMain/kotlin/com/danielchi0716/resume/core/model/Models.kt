@@ -130,19 +130,31 @@ data class SkillSubcategory(
     val items: List<String>,
 )
 
+enum class SkillId(val raw: String) {
+    AI_LLM("ai-llm"),
+    ARCHITECTURE("architecture"),
+    KMP("kmp"),
+    ANDROID("android"),
+    IOS("ios"),
+    TOOLS("tools");
+
+    companion object {
+        fun from(raw: String): SkillId =
+            entries.firstOrNull { it.raw == raw }
+                ?: error("Unknown skill id: $raw")
+    }
+}
+
 sealed class Skill {
-    abstract val id: String
-    abstract val name: String
+    abstract val id: SkillId
 
     data class Platform(
-        override val id: String,
-        override val name: String,
+        override val id: SkillId,
         val subcategories: List<SkillSubcategory>,
     ) : Skill()
 
     data class Category(
-        override val id: String,
-        override val name: String,
+        override val id: SkillId,
         val tags: List<String>,
     ) : Skill()
 }

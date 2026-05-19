@@ -14,7 +14,7 @@ struct SkillsView: View {
                     ForEach(Array(skills.enumerated()), id: \.offset) { _, skill in
                         let color = colorFor(id: skill.id)
                         let icon = iconFor(id: skill.id)
-                        SectionHeaderText(verbatim: skill.name) {
+                        SectionHeaderText(nameKey(for: skill.id)) {
                             Image(systemName: icon)
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(color)
@@ -31,27 +31,36 @@ struct SkillsView: View {
         .onAppear { viewModel.loadAll() }
     }
 
-    private func colorFor(id: String) -> Color {
+    private func colorFor(id: SkillId) -> Color {
         switch id {
-        case "ai-llm": return hig.purple
-        case "architecture": return hig.orange
-        case "kmp": return hig.indigo
-        case "android": return hig.green
-        case "ios": return hig.blue
-        case "tools": return hig.brown
-        default: return hig.tint
+        case .aiLlm: hig.purple
+        case .architecture: hig.orange
+        case .kmp: hig.indigo
+        case .android: hig.green
+        case .ios: hig.blue
+        case .tools: hig.brown
         }
     }
 
-    private func iconFor(id: String) -> String {
+    private func iconFor(id: SkillId) -> String {
         switch id {
-        case "ai-llm": return "sparkles"
-        case "architecture": return "ruler.fill"
-        case "kmp": return "dot.scope"
-        case "android": return "smartphone"
-        case "ios": return "iphone.gen3"
-        case "tools": return "wrench.and.screwdriver.fill"
-        default: return "bolt.fill"
+        case .aiLlm: "sparkles"
+        case .architecture: "ruler.fill"
+        case .kmp: "dot.scope"
+        case .android: "smartphone"
+        case .ios: "iphone.gen3"
+        case .tools: "wrench.and.screwdriver.fill"
+        }
+    }
+
+    private func nameKey(for id: SkillId) -> LocalizedStringKey {
+        switch id {
+        case .aiLlm: "skills.name.ai-llm"
+        case .architecture: "skills.name.architecture"
+        case .kmp: "skills.name.kmp"
+        case .android: "skills.name.android"
+        case .ios: "skills.name.ios"
+        case .tools: "skills.name.tools"
         }
     }
 }

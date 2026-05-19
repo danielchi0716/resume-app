@@ -48,6 +48,14 @@
     <string name="skill_type_platform">Platform</string>
     <string name="skill_type_category">Category</string>
 
+    <!-- Skills: category names -->
+    <string name="skill_name_ai_llm">AI / LLM</string>
+    <string name="skill_name_architecture">Architecture / Principles</string>
+    <string name="skill_name_kmp">Kotlin Multiplatform</string>
+    <string name="skill_name_android">Android</string>
+    <string name="skill_name_ios">iOS</string>
+    <string name="skill_name_tools">General / Tools</string>
+
     <!-- CTA -->
     <string name="cta_thanks">Thanks for reading</string>
     <string name="cta_subtitle">Three platforms, one resume,\nthree ways to read it</string>

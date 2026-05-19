@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Architecture
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.PhoneIphone
@@ -52,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.danielchi0716.resume.core.R
 import com.danielchi0716.resume.core.model.Skill
+import com.danielchi0716.resume.core.model.SkillId
 import com.danielchi0716.resume.core.ui.common.UiState
 import com.danielchi0716.resume.core.ui.common.ErrorState
 import com.danielchi0716.resume.core.ui.common.LoadingState
@@ -106,7 +106,7 @@ private fun SkillsContent(skills: List<Skill>) {
             )
         }
         visible.forEachIndexed { idx, skill ->
-            item(key = skill.name) {
+            item(key = skill.id) {
                 Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
                     SkillCard(skill = skill, paletteIdx = idx)
                 }
@@ -176,14 +176,14 @@ private fun SkillCard(skill: Skill, paletteIdx: Int) {
                 ) {
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                         Icon(
-                            imageVector = iconForSkill(skill.name),
+                            imageVector = iconForSkill(skill.id),
                             contentDescription = null,
                         )
                     }
                 }
                 Column {
                     Text(
-                        text = skill.name,
+                        text = stringResource(nameResFor(skill.id)),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -268,15 +268,20 @@ private fun typeKey(skill: Skill): String = when (skill) {
     is Skill.Category -> "category"
 }
 
-private fun iconForSkill(name: String): ImageVector {
-    val lower = name.lowercase()
-    return when {
-        "android" in lower -> Icons.Filled.Android
-        "ios" in lower || "swift" in lower || "iphone" in lower -> Icons.Filled.PhoneIphone
-        "kmp" in lower || "multiplatform" in lower || "kotlin multiplatform" in lower -> Icons.Filled.Hub
-        "ai" in lower || "claude" in lower -> Icons.Filled.AutoAwesome
-        "架構" in name || "architecture" in lower || "ddd" in lower -> Icons.Filled.Architecture
-        "工具" in name || "tool" in lower || "ci" in lower -> Icons.Filled.Build
-        else -> Icons.Filled.Category
-    }
+private fun iconForSkill(id: SkillId): ImageVector = when (id) {
+    SkillId.AI_LLM -> Icons.Filled.AutoAwesome
+    SkillId.ARCHITECTURE -> Icons.Filled.Architecture
+    SkillId.KMP -> Icons.Filled.Hub
+    SkillId.ANDROID -> Icons.Filled.Android
+    SkillId.IOS -> Icons.Filled.PhoneIphone
+    SkillId.TOOLS -> Icons.Filled.Build
+}
+
+private fun nameResFor(id: SkillId): Int = when (id) {
+    SkillId.AI_LLM -> R.string.skill_name_ai_llm
+    SkillId.ARCHITECTURE -> R.string.skill_name_architecture
+    SkillId.KMP -> R.string.skill_name_kmp
+    SkillId.ANDROID -> R.string.skill_name_android
+    SkillId.IOS -> R.string.skill_name_ios
+    SkillId.TOOLS -> R.string.skill_name_tools
 }

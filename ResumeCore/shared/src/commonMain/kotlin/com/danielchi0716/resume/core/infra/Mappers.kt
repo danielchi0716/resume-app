@@ -17,6 +17,7 @@ import com.danielchi0716.resume.core.model.Photo
 import com.danielchi0716.resume.core.model.Project
 import com.danielchi0716.resume.core.model.SideProject
 import com.danielchi0716.resume.core.model.Skill
+import com.danielchi0716.resume.core.model.SkillId
 import com.danielchi0716.resume.core.model.SkillSubcategory
 import com.danielchi0716.resume.core.model.Tagline
 import com.danielchi0716.resume.core.model.Url
@@ -116,13 +117,11 @@ internal fun SkillSubcategoryBean.toModel() = SkillSubcategory(label, items)
 
 internal fun SkillBean.toModel(): Skill = when (type) {
     "platform" -> Skill.Platform(
-        id = id,
-        name = name,
+        id = SkillId.from(id),
         subcategories = subcategories.map { it.toModel() },
     )
     "category" -> Skill.Category(
-        id = id,
-        name = name,
+        id = SkillId.from(id),
         tags = tags,
     )
     else -> error("Unknown skill type: $type")

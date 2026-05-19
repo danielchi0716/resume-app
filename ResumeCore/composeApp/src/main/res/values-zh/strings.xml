@@ -48,6 +48,14 @@
     <string name="skill_type_platform">平台 / Platform</string>
     <string name="skill_type_category">類別 / Category</string>
 
+    <!-- Skills: category names -->
+    <string name="skill_name_ai_llm">AI / LLM</string>
+    <string name="skill_name_architecture">架構 / 原則</string>
+    <string name="skill_name_kmp">Kotlin Multiplatform</string>
+    <string name="skill_name_android">Android</string>
+    <string name="skill_name_ios">iOS</string>
+    <string name="skill_name_tools">通用 / 工具</string>
+
     <!-- CTA -->
     <string name="cta_thanks">感謝你閱讀到這裡</string>
     <string name="cta_subtitle">這份履歷我做了三個平台版本，\n一份內容、三種閱讀體驗</string>
