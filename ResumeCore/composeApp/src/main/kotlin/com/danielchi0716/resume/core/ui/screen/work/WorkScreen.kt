@@ -36,11 +36,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
 import com.danielchi0716.resume.core.R
 import com.danielchi0716.resume.core.model.WorkExperience
 import com.danielchi0716.resume.core.ui.common.UiState
@@ -52,10 +51,10 @@ import com.danielchi0716.resume.core.ui.common.rememberDataLocale
 import com.danielchi0716.resume.core.ui.format.formatDuration
 import com.danielchi0716.resume.core.ui.format.formatPeriod
 import com.danielchi0716.resume.core.ui.format.nowYearMonth
+import kotlinx.serialization.Serializable
 
-private const val RouteList = "list"
-private const val RouteDetail = "detail/{idx}"
-private fun detailRoute(idx: Int) = "detail/$idx"
+@Serializable private data object WorkListRoute : NavKey
+@Serializable private data class WorkDetailRoute(val idx: Int) : NavKey
 
 @Composable
 fun WorkScreen() {
@@ -63,28 +62,28 @@ fun WorkScreen() {
     val viewModel: WorkViewModel = hiltViewModel(key = locale.code)
     val uiState by viewModel.uiState.collectAsState()
 
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = RouteList) {
-        composable(RouteList) {
-            WorkListView(
-                uiState = uiState,
-                onRetry = viewModel::retry,
-                onOpenDetail = { idx -> navController.navigate(detailRoute(idx)) },
-            )
-        }
-        composable(
-            route = RouteDetail,
-            arguments = listOf(navArgument("idx") { type = NavType.IntType }),
-        ) { entry ->
-            val idx = entry.arguments?.getInt("idx") ?: 0
-            WorkDetailView(
-                uiState = uiState,
-                onRetry = viewModel::retry,
-                initialIdx = idx,
-                onBack = { navController.popBackStack() },
-            )
-        }
-    }
+    val backStack = rememberNavBackStack(WorkListRoute)
+    NavDisplay(
+        backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
+        entryProvider = entryProvider {
+            entry<WorkListRoute> {
+                WorkListView(
+                    uiState = uiState,
+                    onRetry = viewModel::retry,
+                    onOpenDetail = { idx -> backStack.add(WorkDetailRoute(idx)) },
+                )
+            }
+            entry<WorkDetailRoute> { key ->
+                WorkDetailView(
+                    uiState = uiState,
+                    onRetry = viewModel::retry,
+                    initialIdx = key.idx,
+                    onBack = { backStack.removeLastOrNull() },
+                )
+            }
+        },
+    )
 }
 
 @Composable
