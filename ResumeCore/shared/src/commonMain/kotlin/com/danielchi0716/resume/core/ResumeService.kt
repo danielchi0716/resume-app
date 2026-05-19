@@ -7,7 +7,6 @@ import com.danielchi0716.resume.core.model.Locale
 import com.danielchi0716.resume.core.model.Meta
 import com.danielchi0716.resume.core.model.SideProject
 import com.danielchi0716.resume.core.model.Skill
-import com.danielchi0716.resume.core.model.Url
 import com.danielchi0716.resume.core.model.WorkExperience
 import kotlin.coroutines.cancellation.CancellationException
 import org.koin.core.component.get
@@ -49,10 +48,3 @@ interface ResumeService {
 
 fun ResumeCore.service(locale: Locale): ResumeService =
     get { parametersOf(locale) }
-
-fun ResumeCore.resolveUrl(url: Url): String {
-    val raw = url.raw
-    if (raw.startsWith("http://") || raw.startsWith( "https://")) return raw
-    val host = get<NetworkConfig>().host
-    return "https://$host/${raw.trimStart('/')}"
-}

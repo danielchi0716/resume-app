@@ -56,7 +56,6 @@ import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.danielchi0716.resume.core.R
-import com.danielchi0716.resume.core.ResumeCore
 import com.danielchi0716.resume.core.model.Education
 import com.danielchi0716.resume.core.model.Header
 import com.danielchi0716.resume.core.model.Language
@@ -64,8 +63,8 @@ import com.danielchi0716.resume.core.model.LanguageCode
 import com.danielchi0716.resume.core.model.LanguageLevel
 import com.danielchi0716.resume.core.model.LanguageSkill
 import com.danielchi0716.resume.core.model.Photo
-import com.danielchi0716.resume.core.resolveUrl
 import com.danielchi0716.resume.core.ui.common.ContactQuickRow
+import com.danielchi0716.resume.core.ui.common.LocalResumeSetting
 import com.danielchi0716.resume.core.ui.common.UiStateContent
 import com.danielchi0716.resume.core.ui.common.ResumeTopAppBar
 import com.danielchi0716.resume.core.ui.common.SectionLabel
@@ -361,7 +360,8 @@ private fun AvatarImage(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val resolvedUrl = remember(photo.url) { ResumeCore.resolveUrl(photo.url) }
+    val setting = LocalResumeSetting.current
+    val resolvedUrl = remember(photo.url, setting) { setting.resolveUrl(photo.url) }
     val request = remember(resolvedUrl) {
         ImageRequest.Builder(context)
             .data(resolvedUrl)
