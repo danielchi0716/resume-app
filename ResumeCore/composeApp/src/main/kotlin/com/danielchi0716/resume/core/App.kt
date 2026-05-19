@@ -9,6 +9,7 @@ import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -50,7 +51,6 @@ import com.danielchi0716.resume.core.ui.more.MoreScreen
 import com.danielchi0716.resume.core.ui.profile.ProfileScreen
 import com.danielchi0716.resume.core.ui.skills.SkillsScreen
 import com.danielchi0716.resume.core.ui.theme.ResumeTheme
-import com.danielchi0716.resume.core.ui.theme.ThemeMode
 import com.danielchi0716.resume.core.ui.work.WorkScreen
 import kotlinx.coroutines.launch
 
@@ -70,11 +70,80 @@ fun App() {
     val appVm: AppViewModel = hiltViewModel()
     val themeMode by appVm.themeMode.collectAsState()
 
-    CompositionLocalProvider(LocalResumeSetting provides appVm.setting) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbar = remember { SnackbarHostState() }
+    val shareUrl = appVm.setting.shareUrl
+    val shareTitle = stringResource(R.string.share_title)
+    val shareText = stringResource(R.string.share_text)
+    val shareCopied = stringResource(R.string.share_copied)
+
+    val appActions = remember(appVm) {
+        AppActions(
+            onLocaleChange = ::applyAppLocale,
+            onThemeChange = appVm::setThemeMode,
+            onShare = {
+                val sent = sendShareIntent(context, shareTitle, shareText, shareUrl)
+                if (!sent) {
+                    copyToClipboard(context, shareUrl)
+                    scope.launch { snackbar.showSnackbar(shareCopied) }
+                }
+            },
+        )
+    }
+
+    var tab by rememberSaveable { mutableStateOf(Tab.Profile) }
+
+    CompositionLocalProvider(
+        LocalResumeSetting provides appVm.setting,
+        LocalAppActions provides appActions,
+    ) {
         ResumeTheme(themeMode = themeMode) {
-            ResumeRoot(onThemeChange = appVm::setThemeMode)
+            ResumeScaffold(
+                snackbar = snackbar,
+                selectedTab = tab,
+                onTabChange = { tab = it },
+            ) { padding ->
+                Box(Modifier
+                    .fillMaxSize()
+                    .padding(padding)) {
+                    when (tab) {
+                        Tab.Profile -> ProfileScreen()
+                        Tab.Work -> WorkScreen()
+                        Tab.Skills -> SkillsScreen()
+                        Tab.More -> MoreScreen()
+                    }
+                }
+            }
         }
     }
+}
+
+@Composable
+private fun ResumeScaffold(
+    snackbar: SnackbarHostState,
+    selectedTab: Tab,
+    onTabChange: (Tab) -> Unit,
+    content: @Composable (PaddingValues) -> Unit,
+) {
+    Scaffold(
+        bottomBar = {
+            NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
+                Tab.entries.forEach { t ->
+                    NavigationBarItem(
+                        selected = selectedTab == t,
+                        onClick = { onTabChange(t) },
+                        icon = { Icon(t.icon, contentDescription = null) },
+                        label = { Text(stringResource(t.labelRes)) },
+                    )
+                }
+            }
+        },
+        snackbarHost = { SnackbarHost(snackbar) },
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        content = content,
+    )
 }
 
 private fun applyAppLocale(locale: Locale) {
@@ -83,69 +152,6 @@ private fun applyAppLocale(locale: Locale) {
         Locale.English -> "en"
     }
     AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
-}
-
-@Composable
-private fun ResumeRoot(
-    onThemeChange: (ThemeMode) -> Unit,
-) {
-    var tab by rememberSaveable { mutableStateOf(Tab.Profile) }
-    val snackbar = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-    val shareUrl = LocalResumeSetting.current.shareUrl
-
-    val shareTitle = stringResource(R.string.share_title)
-    val shareText = stringResource(R.string.share_text)
-    val shareCopied = stringResource(R.string.share_copied)
-
-    val handleShare: () -> Unit = {
-        val sent = sendShareIntent(context, shareTitle, shareText, shareUrl)
-        if (!sent) {
-            copyToClipboard(context, shareUrl)
-            scope.launch { snackbar.showSnackbar(shareCopied) }
-        }
-    }
-
-    val appActions = remember(onThemeChange) {
-        AppActions(
-            onLocaleChange = ::applyAppLocale,
-            onThemeChange = onThemeChange,
-            onShare = handleShare,
-        )
-    }
-
-    CompositionLocalProvider(LocalAppActions provides appActions) {
-        Scaffold(
-            bottomBar = {
-                NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
-                    Tab.entries.forEach { t ->
-                        NavigationBarItem(
-                            selected = tab == t,
-                            onClick = { tab = t },
-                            icon = { Icon(t.icon, contentDescription = null) },
-                            label = { Text(stringResource(t.labelRes)) },
-                        )
-                    }
-                }
-            },
-            snackbarHost = { SnackbarHost(snackbar) },
-            containerColor = MaterialTheme.colorScheme.surface,
-            // Each screen owns its own TopAppBar (and that bar handles its own
-            // status-bar inset), so we must zero out Scaffold's content insets to
-            // avoid double counting the top inset.
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        ) { padding ->
-            Box(Modifier.fillMaxSize().padding(padding)) {
-                when (tab) {
-                    Tab.Profile -> ProfileScreen()
-                    Tab.Work -> WorkScreen()
-                    Tab.Skills -> SkillsScreen()
-                    Tab.More -> MoreScreen()
-                }
-            }
-        }
-    }
 }
 
 private fun sendShareIntent(context: Context, title: String, text: String, url: String): Boolean {
