@@ -1,4 +1,4 @@
-package com.danielchi0716.resume.core.ui.profile
+package com.danielchi0716.resume.core.ui.screen.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

@@ -1,4 +1,4 @@
-package com.danielchi0716.resume.core.ui.more
+package com.danielchi0716.resume.core.ui.screen.more
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel

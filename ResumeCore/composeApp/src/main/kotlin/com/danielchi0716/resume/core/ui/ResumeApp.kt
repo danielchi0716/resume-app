@@ -1,32 +1,14 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
-package com.danielchi0716.resume.core
+package com.danielchi0716.resume.core.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Work
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -37,36 +19,27 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.os.LocaleListCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.danielchi0716.resume.core.AppViewModel
+import com.danielchi0716.resume.core.R
 import com.danielchi0716.resume.core.model.Locale
 import com.danielchi0716.resume.core.ui.common.AppActions
 import com.danielchi0716.resume.core.ui.common.LocalAppActions
 import com.danielchi0716.resume.core.ui.common.LocalResumeSetting
-import com.danielchi0716.resume.core.ui.more.MoreScreen
-import com.danielchi0716.resume.core.ui.profile.ProfileScreen
-import com.danielchi0716.resume.core.ui.skills.SkillsScreen
+import com.danielchi0716.resume.core.ui.screen.more.MoreScreen
+import com.danielchi0716.resume.core.ui.screen.profile.ProfileScreen
+import com.danielchi0716.resume.core.ui.screen.skills.SkillsScreen
+import com.danielchi0716.resume.core.ui.screen.work.WorkScreen
 import com.danielchi0716.resume.core.ui.theme.ResumeTheme
-import com.danielchi0716.resume.core.ui.work.WorkScreen
 import kotlinx.coroutines.launch
-
-private enum class Tab(
-    @param:StringRes val labelRes: Int,
-    val icon: ImageVector,
-) {
-    Profile(R.string.tab_profile, Icons.Filled.Person),
-    Work(R.string.tab_work, Icons.Filled.Work),
-    Skills(R.string.tab_skills, Icons.Filled.Code),
-    More(R.string.tab_more, Icons.Filled.Apps),
-}
 
 @Preview
 @Composable
-fun App() {
+fun ResumeApp() {
     val appVm: AppViewModel = hiltViewModel()
     val themeMode by appVm.themeMode.collectAsState()
 
@@ -117,33 +90,6 @@ fun App() {
             }
         }
     }
-}
-
-@Composable
-private fun ResumeScaffold(
-    snackbar: SnackbarHostState,
-    selectedTab: Tab,
-    onTabChange: (Tab) -> Unit,
-    content: @Composable (PaddingValues) -> Unit,
-) {
-    Scaffold(
-        bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
-                Tab.entries.forEach { t ->
-                    NavigationBarItem(
-                        selected = selectedTab == t,
-                        onClick = { onTabChange(t) },
-                        icon = { Icon(t.icon, contentDescription = null) },
-                        label = { Text(stringResource(t.labelRes)) },
-                    )
-                }
-            }
-        },
-        snackbarHost = { SnackbarHost(snackbar) },
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        content = content,
-    )
 }
 
 private fun applyAppLocale(locale: Locale) {

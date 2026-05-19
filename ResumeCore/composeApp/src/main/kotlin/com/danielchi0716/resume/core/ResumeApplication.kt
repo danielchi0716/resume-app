@@ -6,7 +6,7 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
 @HiltAndroidApp
-class ResumeApp : Application() {
+class ResumeApplication : Application() {
 
     @Inject lateinit var setting: ResumeSetting
 

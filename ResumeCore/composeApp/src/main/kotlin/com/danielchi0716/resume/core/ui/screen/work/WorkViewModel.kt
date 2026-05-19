@@ -1,4 +1,4 @@
-package com.danielchi0716.resume.core.ui.work
+package com.danielchi0716.resume.core.ui.screen.work
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

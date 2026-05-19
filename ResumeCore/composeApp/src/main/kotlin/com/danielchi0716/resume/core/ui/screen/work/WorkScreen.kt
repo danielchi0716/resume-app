@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.danielchi0716.resume.core.ui.work
+package com.danielchi0716.resume.core.ui.screen.work
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 
-package com.danielchi0716.resume.core.ui.work
+package com.danielchi0716.resume.core.ui.screen.work
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility

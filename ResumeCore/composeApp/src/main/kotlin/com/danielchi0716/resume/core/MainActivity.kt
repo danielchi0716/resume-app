@@ -6,6 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.danielchi0716.resume.core.ui.ResumeApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,7 +16,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            App()
+            ResumeApp()
         }
     }
 }
@@ -23,5 +24,5 @@ class MainActivity : AppCompatActivity() {
 @Preview
 @Composable
 fun AppAndroidPreview() {
-    App()
+    ResumeApp()
 }

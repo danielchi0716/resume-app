@@ -1,4 +1,4 @@
-package com.danielchi0716.resume.core.ui.profile
+package com.danielchi0716.resume.core.ui.screen.profile
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
