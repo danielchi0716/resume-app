@@ -1,3 +1,4 @@
+import FactoryKit
 import Shared
 import SwiftUI
 
@@ -103,11 +104,11 @@ private struct HeroCard: View {
     private struct Avatar: View {
         let photo: Photo
         let monogram: String
+        @Injected(\.appConfig) private var appConfig
         @Environment(\.hig) private var hig
 
         private var resolvedURL: URL? {
-            guard let raw = photo.url as? String, !raw.isEmpty else { return nil }
-            return URL(string: IosBridgeKt.resolveResourceUrl(rawUrl: raw))
+            photo.resolvedURL(host: appConfig.resumeDataHost)
         }
 
         var body: some View {

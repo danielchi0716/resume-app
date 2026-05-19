@@ -3,8 +3,10 @@ import Foundation
 import Shared
 
 extension Container {
-    /// User-resolved locale, derived from `Bundle.main.preferredLocalizations`
-    /// so it stays aligned with NSLocalizedString / String Catalog selection.
+    var appConfig: Factory<AppConfig> {
+        self { .live }
+    }
+
     var sharedLocale: Factory<Shared.Locale> {
         self {
             let lang = (Bundle.main.preferredLocalizations.first ?? "en").lowercased()
@@ -12,14 +14,9 @@ extension Container {
         }
     }
 
-    /// KMP `ResumeService`, locale-resolved per resolution.
-    /// `MainActor.assumeIsolated` is safe because all `@Injected` accesses
-    /// happen on MainActor view models.
     var resumeService: Factory<ResumeService> {
         self {
-            MainActor.assumeIsolated {
-                IosBridgeKt.resumeService(locale: Container.shared.sharedLocale())
-            }
+            ResumeCore().service(locale: self.sharedLocale())
         }
     }
 }

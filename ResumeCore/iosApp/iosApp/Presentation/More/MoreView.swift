@@ -1,5 +1,6 @@
-import SwiftUI
+import FactoryKit
 import Shared
+import SwiftUI
 
 struct MoreView: View {
     @State private var viewModel = MoreViewModel()
@@ -149,8 +150,9 @@ private struct ClosingCard: View {
 }
 
 private struct ArchitectureDiagram: View {
+    @Injected(\.appConfig) private var appConfig
     var body: some View {
-        Link(destination: URL(string: AppConfig.repoUrl)!) {
+        Link(destination: URL(string: appConfig.repoUrl)!) {
             VStack(spacing: 4) {
                 HStack(spacing: 8) {
                     Image(systemName: "circle.hexagongrid.fill")
@@ -264,8 +266,9 @@ private struct PlatformCircle: View {
 }
 
 private struct WebRow: View {
+    @Injected(\.appConfig) private var appConfig
     var body: some View {
-        Link(destination: URL(string: AppConfig.resumeShareUrl)!) {
+        Link(destination: URL(string: appConfig.resumeShareUrl)!) {
             HStack(spacing: 12) {
                 ZStack {
                     Circle().fill(Color.white.opacity(0.95))
