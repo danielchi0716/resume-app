@@ -45,6 +45,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.danielchi0716.resume.core.model.Locale
 import com.danielchi0716.resume.core.ui.common.AppActions
 import com.danielchi0716.resume.core.ui.common.LocalAppActions
+import com.danielchi0716.resume.core.ui.common.LocalResumeSetting
 import com.danielchi0716.resume.core.ui.more.MoreScreen
 import com.danielchi0716.resume.core.ui.profile.ProfileScreen
 import com.danielchi0716.resume.core.ui.skills.SkillsScreen
@@ -52,8 +53,6 @@ import com.danielchi0716.resume.core.ui.theme.ResumeTheme
 import com.danielchi0716.resume.core.ui.theme.ThemeMode
 import com.danielchi0716.resume.core.ui.work.WorkScreen
 import kotlinx.coroutines.launch
-
-private val ResumeUrl: String = BuildConfig.RESUME_SHARE_URL
 
 private enum class Tab(
     @param:StringRes val labelRes: Int,
@@ -71,8 +70,10 @@ fun App() {
     val appVm: AppViewModel = hiltViewModel()
     val themeMode by appVm.themeMode.collectAsState()
 
-    ResumeTheme(themeMode = themeMode) {
-        ResumeRoot(onThemeChange = appVm::setThemeMode)
+    CompositionLocalProvider(LocalResumeSetting provides appVm.setting) {
+        ResumeTheme(themeMode = themeMode) {
+            ResumeRoot(onThemeChange = appVm::setThemeMode)
+        }
     }
 }
 
@@ -92,15 +93,16 @@ private fun ResumeRoot(
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val shareUrl = LocalResumeSetting.current.shareUrl
 
     val shareTitle = stringResource(R.string.share_title)
     val shareText = stringResource(R.string.share_text)
     val shareCopied = stringResource(R.string.share_copied)
 
     val handleShare: () -> Unit = {
-        val sent = sendShareIntent(context, shareTitle, shareText, ResumeUrl)
+        val sent = sendShareIntent(context, shareTitle, shareText, shareUrl)
         if (!sent) {
-            copyToClipboard(context, ResumeUrl)
+            copyToClipboard(context, shareUrl)
             scope.launch { snackbar.showSnackbar(shareCopied) }
         }
     }
@@ -139,7 +141,7 @@ private fun ResumeRoot(
                     Tab.Profile -> ProfileScreen()
                     Tab.Work -> WorkScreen()
                     Tab.Skills -> SkillsScreen()
-                    Tab.More -> MoreScreen(resumeUrl = ResumeUrl)
+                    Tab.More -> MoreScreen()
                 }
             }
         }

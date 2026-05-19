@@ -4,10 +4,12 @@ import android.content.Context
 import androidx.core.app.LocaleManagerCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.danielchi0716.resume.core.BuildConfig
 import com.danielchi0716.resume.core.ResumeCore
 import com.danielchi0716.resume.core.ResumeService
 import com.danielchi0716.resume.core.data.appDataStore
 import com.danielchi0716.resume.core.model.Locale
+import com.danielchi0716.resume.core.ui.common.ResumeSetting
 import com.danielchi0716.resume.core.service
 import dagger.Module
 import dagger.Provides
@@ -40,4 +42,12 @@ object AppModule {
     @Singleton
     fun provideAppDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         context.appDataStore
+
+    @Provides
+    @Singleton
+    fun provideResumeSetting(): ResumeSetting = ResumeSetting(
+        repoUrl = BuildConfig.REPO_URL,
+        dataHost = BuildConfig.RESUME_DATA_HOST,
+        shareUrl = BuildConfig.RESUME_SHARE_URL,
+    )
 }

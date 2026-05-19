@@ -66,23 +66,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.danielchi0716.resume.core.BuildConfig
 import com.danielchi0716.resume.core.R
 import com.danielchi0716.resume.core.model.SideProject
 import com.danielchi0716.resume.core.ui.common.UiState
 import com.danielchi0716.resume.core.ui.common.ContactQuickRow
 import com.danielchi0716.resume.core.ui.common.ErrorState
 import com.danielchi0716.resume.core.ui.common.LoadingState
+import com.danielchi0716.resume.core.ui.common.LocalResumeSetting
 import com.danielchi0716.resume.core.ui.common.ResumeTopAppBar
 import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.TinyChip
 import com.danielchi0716.resume.core.ui.common.rememberDataLocale
 import com.danielchi0716.resume.core.ui.format.formatPeriod
 
-private val REPO_URL: String = BuildConfig.REPO_URL
-
 @Composable
-fun MoreScreen(resumeUrl: String) {
+fun MoreScreen() {
     val locale = rememberDataLocale()
     val viewModel: MoreViewModel = hiltViewModel(key = locale.code)
     val uiState by viewModel.uiState.collectAsState()
@@ -95,13 +93,13 @@ fun MoreScreen(resumeUrl: String) {
         when (val s = uiState) {
             is UiState.Loading -> LoadingState()
             is UiState.Error -> ErrorState(message = s.message, onRetry = viewModel::retry)
-            is UiState.Ready -> MoreContent(data = s.data, resumeUrl = resumeUrl)
+            is UiState.Ready -> MoreContent(data = s.data)
         }
     }
 }
 
 @Composable
-private fun MoreContent(data: MoreData, resumeUrl: String) {
+private fun MoreContent(data: MoreData) {
     val openMap = remember { mutableStateMapOf<String, Boolean>() }
 
     LazyColumn(
@@ -127,7 +125,7 @@ private fun MoreContent(data: MoreData, resumeUrl: String) {
         }
         item {
             Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                CtaCard(resumeUrl = resumeUrl)
+                CtaCard()
             }
         }
         item {
@@ -239,8 +237,9 @@ private fun SideProjectCard(
 }
 
 @Composable
-private fun CtaCard(resumeUrl: String) {
+private fun CtaCard() {
     val uri = LocalUriHandler.current
+    val setting = LocalResumeSetting.current
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
         shape = RoundedCornerShape(12.dp),
@@ -270,13 +269,13 @@ private fun CtaCard(resumeUrl: String) {
                 modifier = Modifier.padding(top = 8.dp),
             )
             KmpArchitectureBlock(
-                onClick = { runCatching { uri.openUri(REPO_URL) } },
+                onClick = { runCatching { uri.openUri(setting.repoUrl) } },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp),
             )
             WebRowCard(
-                onClick = { runCatching { uri.openUri(resumeUrl) } },
+                onClick = { runCatching { uri.openUri(setting.shareUrl) } },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),

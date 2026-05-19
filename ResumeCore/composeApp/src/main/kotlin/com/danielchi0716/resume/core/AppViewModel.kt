@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.danielchi0716.resume.core.ui.common.ResumeSetting
 import com.danielchi0716.resume.core.ui.theme.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val dataStore: DataStore<Preferences>,
+    val setting: ResumeSetting,
 ) : ViewModel() {
 
     val themeMode: StateFlow<ThemeMode> = dataStore.data
