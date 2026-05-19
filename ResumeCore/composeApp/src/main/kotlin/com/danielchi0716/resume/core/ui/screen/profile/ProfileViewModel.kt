@@ -26,10 +26,7 @@ data class ProfileData(
 )
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(
-    private val service: ResumeService,
-) : ViewModel() {
-
+class ProfileViewModel @Inject constructor(private val service: ResumeService) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState<ProfileData>>(UiState.Loading)
     val uiState: StateFlow<UiState<ProfileData>> = _uiState.asStateFlow()
 

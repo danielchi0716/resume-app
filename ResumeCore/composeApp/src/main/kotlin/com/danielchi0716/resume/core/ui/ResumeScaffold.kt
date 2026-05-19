@@ -24,10 +24,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.danielchi0716.resume.core.R
 
-internal enum class Tab(
-    @param:StringRes val labelRes: Int,
-    val icon: ImageVector,
-) {
+internal enum class Tab(@param:StringRes val labelRes: Int, val icon: ImageVector) {
     Profile(R.string.tab_profile, Icons.Filled.Person),
     Work(R.string.tab_work, Icons.Filled.Work),
     Skills(R.string.tab_skills, Icons.Filled.Code),
@@ -44,12 +41,12 @@ internal fun ResumeScaffold(
     Scaffold(
         bottomBar = {
             NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
-                Tab.entries.forEach { t ->
+                Tab.entries.forEach { tab ->
                     NavigationBarItem(
-                        selected = selectedTab == t,
-                        onClick = { onTabChange(t) },
-                        icon = { Icon(t.icon, contentDescription = null) },
-                        label = { Text(stringResource(t.labelRes)) },
+                        selected = selectedTab == tab,
+                        onClick = { onTabChange(tab) },
+                        icon = { Icon(tab.icon, contentDescription = null) },
+                        label = { Text(stringResource(tab.labelRes)) },
                     )
                 }
             }
