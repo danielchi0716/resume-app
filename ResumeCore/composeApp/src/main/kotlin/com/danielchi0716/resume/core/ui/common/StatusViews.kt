@@ -60,6 +60,19 @@ fun ErrorState(
 }
 
 @Composable
+fun <T> UiStateContent(
+    state: UiState<T>,
+    onRetry: () -> Unit,
+    ready: @Composable (T) -> Unit,
+) {
+    when (state) {
+        is UiState.Loading -> LoadingState()
+        is UiState.Error -> ErrorState(message = state.message, onRetry = onRetry)
+        is UiState.Ready -> ready(state.data)
+    }
+}
+
+@Composable
 fun rememberDataLocale(): Locale {
     val configuration = LocalConfiguration.current
     return androidx.compose.runtime.remember(configuration) {

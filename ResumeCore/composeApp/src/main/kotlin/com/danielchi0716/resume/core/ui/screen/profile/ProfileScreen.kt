@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,11 +64,9 @@ import com.danielchi0716.resume.core.model.LanguageCode
 import com.danielchi0716.resume.core.model.LanguageLevel
 import com.danielchi0716.resume.core.model.LanguageSkill
 import com.danielchi0716.resume.core.model.Photo
-import com.danielchi0716.resume.core.ui.common.UiState
 import com.danielchi0716.resume.core.resolveUrl
 import com.danielchi0716.resume.core.ui.common.ContactQuickRow
-import com.danielchi0716.resume.core.ui.common.ErrorState
-import com.danielchi0716.resume.core.ui.common.LoadingState
+import com.danielchi0716.resume.core.ui.common.UiStateContent
 import com.danielchi0716.resume.core.ui.common.ResumeTopAppBar
 import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.rememberDataLocale
@@ -84,10 +83,8 @@ fun ProfileScreen() {
             title = stringResource(R.string.title_profile),
             leadingIcon = Icons.Filled.Person,
         )
-        when (val s = uiState) {
-            is UiState.Loading -> LoadingState()
-            is UiState.Error -> ErrorState(message = s.message, onRetry = viewModel::retry)
-            is UiState.Ready -> ProfileContent(data = s.data)
+        UiStateContent(state = uiState, onRetry = viewModel::retry) { data ->
+            ProfileContent(data = data)
         }
     }
 }
@@ -96,7 +93,7 @@ fun ProfileScreen() {
 private fun ProfileContent(data: ProfileData) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 96.dp),
+        contentPadding = PaddingValues(bottom = 96.dp),
         verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
         item { HeroCard(header = data.header) }
@@ -121,7 +118,6 @@ private fun HeroCard(header: Header) {
             colorScheme.tertiaryContainer,
         ),
     )
-    val monogram = header.name.firstOrNull()?.toString() ?: "·"
 
     Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         Surface(
@@ -141,7 +137,7 @@ private fun HeroCard(header: Header) {
                 ) {
                     AvatarImage(
                         photo = header.photo,
-                        monogram = monogram,
+                        monogram = header.monogram,
                         modifier = Modifier
                             .size(72.dp)
                             .shadow(elevation = 4.dp, shape = CircleShape),

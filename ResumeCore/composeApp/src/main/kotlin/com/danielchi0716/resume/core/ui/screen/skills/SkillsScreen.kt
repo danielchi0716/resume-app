@@ -52,9 +52,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.danielchi0716.resume.core.R
 import com.danielchi0716.resume.core.model.Skill
 import com.danielchi0716.resume.core.model.SkillId
-import com.danielchi0716.resume.core.ui.common.UiState
-import com.danielchi0716.resume.core.ui.common.ErrorState
-import com.danielchi0716.resume.core.ui.common.LoadingState
+import com.danielchi0716.resume.core.ui.common.UiStateContent
 import com.danielchi0716.resume.core.ui.common.ResumeTopAppBar
 import com.danielchi0716.resume.core.ui.common.rememberDataLocale
 
@@ -69,10 +67,8 @@ fun SkillsScreen() {
             title = stringResource(R.string.title_skills),
             leadingIcon = Icons.Filled.Code,
         )
-        when (val s = uiState) {
-            is UiState.Loading -> LoadingState()
-            is UiState.Error -> ErrorState(message = s.message, onRetry = viewModel::retry)
-            is UiState.Ready -> SkillsContent(skills = s.data)
+        UiStateContent(state = uiState, onRetry = viewModel::retry) { skills ->
+            SkillsContent(skills = skills)
         }
     }
 }

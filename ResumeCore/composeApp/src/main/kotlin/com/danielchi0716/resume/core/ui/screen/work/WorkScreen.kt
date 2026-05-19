@@ -44,8 +44,7 @@ import androidx.navigation.navArgument
 import com.danielchi0716.resume.core.R
 import com.danielchi0716.resume.core.model.WorkExperience
 import com.danielchi0716.resume.core.ui.common.UiState
-import com.danielchi0716.resume.core.ui.common.ErrorState
-import com.danielchi0716.resume.core.ui.common.LoadingState
+import com.danielchi0716.resume.core.ui.common.UiStateContent
 import com.danielchi0716.resume.core.ui.common.ResumeTopAppBar
 import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.TinyChip
@@ -99,10 +98,8 @@ private fun WorkListView(
             title = stringResource(R.string.title_work),
             leadingIcon = Icons.Filled.Work,
         )
-        when (uiState) {
-            is UiState.Loading -> LoadingState()
-            is UiState.Error -> ErrorState(message = uiState.message, onRetry = onRetry)
-            is UiState.Ready -> WorkListContent(jobs = uiState.data, onOpenDetail = onOpenDetail)
+        UiStateContent(state = uiState, onRetry = onRetry) { jobs ->
+            WorkListContent(jobs = jobs, onOpenDetail = onOpenDetail)
         }
     }
 }

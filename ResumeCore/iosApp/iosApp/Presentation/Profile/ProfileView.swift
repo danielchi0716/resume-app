@@ -68,7 +68,7 @@ private struct HeroCard: View {
             .allowsHitTesting(false)
 
             VStack(spacing: 10) {
-                Avatar(photo: header.photo, monogram: initials(from: header.englishName))
+                Avatar(photo: header.photo, monogram: header.monogram)
                 Text(header.name)
                     .font(HIGType.title2)
                     .foregroundColor(hig.label)
@@ -92,13 +92,6 @@ private struct HeroCard: View {
         .padding(.horizontal, 16)
         .padding(.top, 4)
         .padding(.bottom, 20)
-    }
-
-    private func initials(from name: String) -> String {
-        name.split(separator: " ")
-            .compactMap { $0.first.map(String.init) }
-            .prefix(2)
-            .joined()
     }
 
     private struct Avatar: View {

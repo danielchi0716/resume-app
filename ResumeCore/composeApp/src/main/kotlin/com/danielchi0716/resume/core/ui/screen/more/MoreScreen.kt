@@ -68,10 +68,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.danielchi0716.resume.core.R
 import com.danielchi0716.resume.core.model.SideProject
-import com.danielchi0716.resume.core.ui.common.UiState
 import com.danielchi0716.resume.core.ui.common.ContactQuickRow
-import com.danielchi0716.resume.core.ui.common.ErrorState
-import com.danielchi0716.resume.core.ui.common.LoadingState
+import com.danielchi0716.resume.core.ui.common.UiStateContent
 import com.danielchi0716.resume.core.ui.common.LocalResumeSetting
 import com.danielchi0716.resume.core.ui.common.ResumeTopAppBar
 import com.danielchi0716.resume.core.ui.common.SectionLabel
@@ -90,10 +88,8 @@ fun MoreScreen() {
             title = stringResource(R.string.title_more),
             leadingIcon = Icons.Filled.Apps,
         )
-        when (val s = uiState) {
-            is UiState.Loading -> LoadingState()
-            is UiState.Error -> ErrorState(message = s.message, onRetry = viewModel::retry)
-            is UiState.Ready -> MoreContent(data = s.data)
+        UiStateContent(state = uiState, onRetry = viewModel::retry) { data ->
+            MoreContent(data = data)
         }
     }
 }

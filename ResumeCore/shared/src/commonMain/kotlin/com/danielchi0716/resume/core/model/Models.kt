@@ -64,7 +64,13 @@ data class Header(
     val tagline: Tagline,
     val photo: Photo,
     val contacts: List<Contact>,
-)
+) {
+    val monogram: String
+        get() = englishName.split(" ")
+            .mapNotNull { it.firstOrNull()?.toString() }
+            .take(2)
+            .joinToString("")
+}
 
 data class Labels(
     val pageTitle: String,
