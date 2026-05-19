@@ -288,16 +288,15 @@ private struct YearTimeline: View {
     @Environment(\.hig) private var hig
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            Rectangle()
-                .fill(hig.separator)
-                .frame(width: 2)
-                .padding(.leading, 11)
-                .padding(.vertical, 8)
-
-            VStack(alignment: .leading, spacing: 16) {
-                ForEach(Array(items.enumerated()), id: \.offset) { _, item in
-                    HStack(alignment: .top, spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(items.enumerated()), id: \.offset) { idx, item in
+                let isFirst = idx == 0
+                let isLast = idx == items.count - 1
+                HStack(alignment: .top, spacing: 0) {
+                    VStack(spacing: 0) {
+                        Rectangle()
+                            .fill(isFirst ? Color.clear : hig.separator)
+                            .frame(width: 2, height: 6)
                         ZStack {
                             Circle()
                                 .stroke(accent, lineWidth: 2)
@@ -307,44 +306,49 @@ private struct YearTimeline: View {
                                 .fill(accent)
                                 .frame(width: 8, height: 8)
                         }
-                        .frame(width: 24, alignment: .leading)
-                        .padding(.top, 6)
+                        .zIndex(1)
+                        Rectangle()
+                            .fill(isLast ? Color.clear : hig.separator)
+                            .frame(width: 2)
+                            .frame(maxHeight: .infinity)
+                    }
+                    .frame(width: 24, alignment: .leading)
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(item.years.map { String($0.int32Value) }.joined(separator: " ─ "))
-                                .font(.system(size: 12, weight: .bold))
-                                .foregroundColor(accent)
-                                .tracking(0.4)
-                            Text(item.title)
-                                .font(HIGType.subheadlineEmph)
-                                .foregroundColor(hig.label)
-                            if let desc = item.description_, !desc.isEmpty {
-                                Text(desc)
-                                    .font(HIGType.footnote)
-                                    .foregroundColor(hig.secondaryLabel)
-                                    .lineSpacing(4)
-                            }
-                            let bullets = item.bullets
-                            if !bullets.isEmpty {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    ForEach(Array(bullets.enumerated()), id: \.offset) { _, b in
-                                        Text("· \(b)")
-                                            .font(HIGType.footnote)
-                                            .foregroundColor(hig.secondaryLabel)
-                                            .lineSpacing(4)
-                                    }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(item.years.map { String($0.int32Value) }.joined(separator: " ─ "))
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(accent)
+                            .tracking(0.4)
+                        Text(item.title)
+                            .font(HIGType.subheadlineEmph)
+                            .foregroundColor(hig.label)
+                        if let desc = item.description_, !desc.isEmpty {
+                            Text(desc)
+                                .font(HIGType.footnote)
+                                .foregroundColor(hig.secondaryLabel)
+                                .lineSpacing(4)
+                        }
+                        let bullets = item.bullets
+                        if !bullets.isEmpty {
+                            VStack(alignment: .leading, spacing: 4) {
+                                ForEach(Array(bullets.enumerated()), id: \.offset) { _, b in
+                                    Text("· \(b)")
+                                        .font(HIGType.footnote)
+                                        .foregroundColor(hig.secondaryLabel)
+                                        .lineSpacing(4)
                                 }
                             }
-                            let tags = item.tags
-                            if !tags.isEmpty {
-                                FlowLayoutTags(tags: tags, color: hig.secondaryLabel)
-                            }
+                        }
+                        let tags = item.tags
+                        if !tags.isEmpty {
+                            FlowLayoutTags(tags: tags, color: hig.secondaryLabel)
                         }
                     }
+                    .padding(.bottom, isLast ? 0 : 16)
                 }
             }
-            .padding(.top, 6)
         }
+        .padding(.top, 6)
     }
 }
 
