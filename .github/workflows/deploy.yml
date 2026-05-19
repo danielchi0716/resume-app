@@ -170,10 +170,46 @@ jobs:
           zip -qr "artifacts/resume-${TAG}.ipa" Payload
           rm -rf Payload
 
+      - name: Build simulator app
+        working-directory: ResumeCore/iosApp
+        env:
+          MARKETING_VERSION: ${{ needs.version.outputs.version }}
+          CURRENT_PROJECT_VERSION: ${{ needs.version.outputs.version_code }}
+        run: |
+          xcodebuild \
+            -project iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build-sim \
+            MARKETING_VERSION="$MARKETING_VERSION" \
+            CURRENT_PROJECT_VERSION="$CURRENT_PROJECT_VERSION" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package simulator app
+        working-directory: ResumeCore/iosApp
+        env:
+          TAG: ${{ needs.version.outputs.tag }}
+        run: |
+          APP_DIR="build-sim/Build/Products/Release-iphonesimulator"
+          if [ ! -d "$APP_DIR/ResumeCore.app" ]; then
+            echo "Expected simulator app missing: $APP_DIR/ResumeCore.app" >&2
+            exit 1
+          fi
+          (cd "$APP_DIR" && zip -qr "$GITHUB_WORKSPACE/ResumeCore/iosApp/artifacts/resume-${TAG}-simulator.zip" ResumeCore.app)
+
       - uses: actions/upload-artifact@v4
         with:
           name: ios-release-ipa
           path: ResumeCore/iosApp/artifacts/*.ipa
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-simulator
+          path: ResumeCore/iosApp/artifacts/*-simulator.zip
           if-no-files-found: error
 
   # ----- Publish phase -----
@@ -244,7 +280,8 @@ jobs:
               echo "- **Web**: (not deployed)"
             fi
             echo "- **Android**: see APK asset attached below"
-            echo "- **iOS**: see IPA asset attached below (unsigned — sideload required)"
+            echo "- **iOS (device)**: see \`.ipa\` asset (unsigned — sideload required)"
+            echo "- **iOS (Simulator)**: see \`-simulator.zip\` asset (drag into Simulator or \`xcrun simctl install booted ResumeCore.app\`)"
             echo ""
             if [ -n "${PREV_TAG}" ]; then
               echo "## Changes since [\`${PREV_TAG}\`](${SERVER_URL}/${REPO}/releases/tag/${PREV_TAG})"
@@ -274,12 +311,12 @@ jobs:
           if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
             echo "Release $TAG exists, refreshing notes and uploading artifacts."
             gh release edit "$TAG" --notes-file "$NOTES_FILE" --repo "$REPO"
-            gh release upload "$TAG" artifacts/*.apk artifacts/*.ipa --clobber --repo "$REPO"
+            gh release upload "$TAG" artifacts/*.apk artifacts/*.ipa artifacts/*.zip --clobber --repo "$REPO"
           else
             gh release create "$TAG" \
               --target "$SHA" \
               --title "$TAG" \
               --notes-file "$NOTES_FILE" \
               --repo "$REPO" \
-              artifacts/*.apk artifacts/*.ipa
+              artifacts/*.apk artifacts/*.ipa artifacts/*.zip
           fi
