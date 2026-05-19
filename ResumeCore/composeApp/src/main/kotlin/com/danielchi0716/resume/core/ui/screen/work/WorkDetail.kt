@@ -174,12 +174,11 @@ private fun JobTabs(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = job.company.replace("股份有限公司", "").replace("有限公司", "").trim(),
+                        text = job.company,
                         style = MaterialTheme.typography.labelLarge,
                         color = if (active) MaterialTheme.colorScheme.onSurface
                         else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
-                        maxLines = 1,
                     )
                     Text(
                         text = yearRangeShort(job.period),
