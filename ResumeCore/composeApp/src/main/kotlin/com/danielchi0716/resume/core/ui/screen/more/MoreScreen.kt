@@ -130,7 +130,7 @@ private fun MoreContent(data: MoreData) {
                     text = stringResource(R.string.section_contact),
                     modifier = Modifier.padding(bottom = 12.dp),
                 )
-                ContactQuickRow(contacts = data.header.contacts.take(4))
+                ContactQuickRow(contacts = data.header.contacts)
             }
         }
         item {

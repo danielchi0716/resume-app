@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -75,49 +76,71 @@ fun TinyChip(
     }
 }
 
+private const val CONTACTS_PER_ROW = 4
+
 @Composable
 fun ContactQuickRow(
     contacts: List<Contact>,
     modifier: Modifier = Modifier,
 ) {
     val uri = LocalUriHandler.current
-    Row(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        contacts.forEach { c ->
+        contacts.chunked(CONTACTS_PER_ROW).forEach { rowContacts ->
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                rowContacts.forEach { c ->
+                    ContactTile(
+                        contact = c,
+                        onClick = { runCatching { uri.openUri(c.url.raw) } },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                repeat(CONTACTS_PER_ROW - rowContacts.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ContactTile(
+    contact: Contact,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = RoundedCornerShape(12.dp),
+        modifier = modifier,
+        onClick = onClick,
+    ) {
+        Column(
+            modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
             Surface(
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.weight(1f),
-                onClick = { runCatching { uri.openUri(c.url.raw) } },
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                shape = CircleShape,
+                modifier = Modifier.size(44.dp),
             ) {
-                Column(
-                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Surface(
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        shape = CircleShape,
-                        modifier = Modifier.size(44.dp),
-                    ) {
-                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
-                            Icon(
-                                imageVector = iconFor(c.type),
-                                contentDescription = null,
-                                modifier = Modifier.size(22.dp),
-                            )
-                        }
-                    }
-                    Text(
-                        text = labelFor(c.type, c.value),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                    Icon(
+                        imageVector = iconFor(contact.type),
+                        contentDescription = null,
+                        modifier = Modifier.size(22.dp),
                     )
                 }
             }
+            Text(
+                text = labelFor(contact.type, contact.value),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
         }
     }
 }

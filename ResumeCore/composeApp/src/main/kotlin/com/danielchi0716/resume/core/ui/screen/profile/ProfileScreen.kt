@@ -99,7 +99,7 @@ private fun ProfileContent(data: ProfileData) {
         item { HeroCard(header = data.header) }
         item {
             Box(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
-                ContactQuickRow(contacts = data.header.contacts.take(4))
+                ContactQuickRow(contacts = data.header.contacts)
             }
         }
         item { LanguagesSection(languages = data.languages) }
@@ -255,10 +255,9 @@ private fun LanguagesSection(languages: List<Language>) {
                     ) {
                         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                             Icon(
-                                imageVector = if (l.level is LanguageLevel.Native) {
-                                    Icons.Filled.Translate
-                                } else {
-                                    Icons.Filled.Language
+                                imageVector = when (l.level) {
+                                    is LanguageLevel.Native -> Icons.Filled.Translate
+                                    is LanguageLevel.Proficiency -> Icons.Filled.Language
                                 },
                                 contentDescription = null,
                             )
