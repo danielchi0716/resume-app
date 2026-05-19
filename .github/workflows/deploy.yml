@@ -44,7 +44,7 @@ jobs:
           echo "Build time: ${BUILD_TIME}"
 
   # ----- Build phase -----
-  # Each platform produces an artifact (Pages tarball / APK / iOS placeholder)
+  # Each platform produces an artifact (Pages tarball / APK / unsigned IPA)
   # but does NOT publish anything externally. If any build fails, the publish
   # phase below is skipped, so deployments stay in lockstep across platforms.
 
@@ -115,10 +115,66 @@ jobs:
 
   build-ios:
     needs: version
-    # Switch to macos-latest when the iOS build is filled in.
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
-      - run: echo "TODO iOS build (version=${{ needs.version.outputs.version }})"
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Render AppConfig.xcconfig
+        working-directory: ResumeCore/iosApp
+        env:
+          RESUME_DATA_HOST: ${{ vars.RESUME_DATA_HOST }}
+          RESUME_SHARE_URL: ${{ vars.RESUME_SHARE_URL }}
+          RESUME_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: ./scripts/render-appconfig.sh
+
+      - name: Build unsigned iOS app
+        working-directory: ResumeCore/iosApp
+        env:
+          MARKETING_VERSION: ${{ needs.version.outputs.version }}
+          CURRENT_PROJECT_VERSION: ${{ needs.version.outputs.version_code }}
+        run: |
+          xcodebuild \
+            -project iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            MARKETING_VERSION="$MARKETING_VERSION" \
+            CURRENT_PROJECT_VERSION="$CURRENT_PROJECT_VERSION" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            build
+
+      - name: Package unsigned IPA
+        working-directory: ResumeCore/iosApp
+        env:
+          TAG: ${{ needs.version.outputs.tag }}
+        run: |
+          APP="build/Build/Products/Release-iphoneos/ResumeCore.app"
+          if [ ! -d "$APP" ]; then
+            echo "Expected app bundle missing: $APP" >&2
+            exit 1
+          fi
+          rm -rf Payload && mkdir Payload artifacts
+          cp -R "$APP" Payload/
+          zip -qr "artifacts/resume-${TAG}.ipa" Payload
+          rm -rf Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-ipa
+          path: ResumeCore/iosApp/artifacts/*.ipa
+          if-no-files-found: error
 
   # ----- Publish phase -----
   # Only runs once every build job above has succeeded.
@@ -142,7 +198,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   release:
-    needs: [version, build-android, deploy-web]
+    needs: [version, build-android, build-ios, deploy-web]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -154,8 +210,9 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: android-release-apk
+          pattern: '*-release-*'
           path: artifacts
+          merge-multiple: true
 
       - name: Build release notes
         id: notes
@@ -187,7 +244,7 @@ jobs:
               echo "- **Web**: (not deployed)"
             fi
             echo "- **Android**: see APK asset attached below"
-            echo "- **iOS**: not yet released"
+            echo "- **iOS**: see IPA asset attached below (unsigned — sideload required)"
             echo ""
             if [ -n "${PREV_TAG}" ]; then
               echo "## Changes since [\`${PREV_TAG}\`](${SERVER_URL}/${REPO}/releases/tag/${PREV_TAG})"
@@ -217,12 +274,12 @@ jobs:
           if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
             echo "Release $TAG exists, refreshing notes and uploading artifacts."
             gh release edit "$TAG" --notes-file "$NOTES_FILE" --repo "$REPO"
-            gh release upload "$TAG" artifacts/*.apk --clobber --repo "$REPO"
+            gh release upload "$TAG" artifacts/*.apk artifacts/*.ipa --clobber --repo "$REPO"
           else
             gh release create "$TAG" \
               --target "$SHA" \
               --title "$TAG" \
               --notes-file "$NOTES_FILE" \
               --repo "$REPO" \
-              artifacts/*.apk
+              artifacts/*.apk artifacts/*.ipa
           fi
