@@ -57,7 +57,6 @@ private struct HeroCard: View {
         ZStack {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .fill(hig.secondarySystemGroupedBackground)
-            // Gradient halo
             RadialGradient(
                 colors: [hig.tint.opacity(0.20), .clear],
                 center: .top,

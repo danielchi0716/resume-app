@@ -152,7 +152,6 @@ private struct ArchitectureDiagram: View {
     var body: some View {
         Link(destination: URL(string: AppConfig.repoUrl)!) {
             VStack(spacing: 4) {
-                // KMP core
                 HStack(spacing: 8) {
                     Image(systemName: "circle.hexagongrid.fill")
                         .font(.system(size: 16, weight: .bold))
@@ -175,13 +174,11 @@ private struct ArchitectureDiagram: View {
                 )
                 .shadow(color: .black.opacity(0.12), radius: 3, y: 2)
 
-                // Connecting dashed lines
                 ZStack {
                     ConnectorLines()
                 }
                 .frame(height: 34)
 
-                // Platform circles
                 HStack {
                     PlatformCircle(systemImage: "smartphone", label: "platform.android")
                     Spacer()
@@ -233,7 +230,6 @@ private struct ConnectorLines: View {
             path.addLine(to: CGPoint(x: rightX, y: bottomY))
             ctx.stroke(path, with: .color(stroke), style: style)
 
-            // dot caps
             for p in [CGPoint(x: centerX, y: topY),
                       CGPoint(x: leftX, y: bottomY),
                       CGPoint(x: rightX, y: bottomY)] {

@@ -22,7 +22,6 @@ extension Period {
 }
 
 extension Sequence where Element == Period {
-    /// Approximate whole-years total across all periods, formatted as "N+".
     var totalYearsApprox: String {
         let months = reduce(0) { acc, p in
             let c = p.toDateComponents()

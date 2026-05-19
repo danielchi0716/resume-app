@@ -10,7 +10,6 @@ struct FlowLayoutTags: View {
     }
 }
 
-/// Simple wrap-flow horizontal layout (chips/tags).
 struct FlexibleHStack<Data: RandomAccessCollection, Content: View>: View where Data.Element: Hashable {
     let data: Data
     let spacing: CGFloat

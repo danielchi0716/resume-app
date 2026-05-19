@@ -86,7 +86,6 @@ private struct DetailHeader: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            // Current company + period (centered)
             VStack(spacing: 2) {
                 Text(trimmedCompany)
                     .font(.system(size: 17, weight: .bold))
@@ -101,7 +100,6 @@ private struct DetailHeader: View {
             .padding(.top, 4)
             .id(page) // crossfade between pages
 
-            // Page dots
             HStack(spacing: 6) {
                 ForEach(0..<jobs.count, id: \.self) { idx in
                     Capsule()
