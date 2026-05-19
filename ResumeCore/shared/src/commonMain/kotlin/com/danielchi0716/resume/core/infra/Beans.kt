@@ -97,6 +97,7 @@ internal data class SkillSubcategoryBean(
 
 @Serializable
 internal data class SkillBean(
+    val id: String,
     val type: String,
     val name: String,
     val subcategories: List<SkillSubcategoryBean> = emptyList(),

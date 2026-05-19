@@ -131,14 +131,17 @@ data class SkillSubcategory(
 )
 
 sealed class Skill {
+    abstract val id: String
     abstract val name: String
 
     data class Platform(
+        override val id: String,
         override val name: String,
         val subcategories: List<SkillSubcategory>,
     ) : Skill()
 
     data class Category(
+        override val id: String,
         override val name: String,
         val tags: List<String>,
     ) : Skill()

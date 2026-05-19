@@ -12,8 +12,8 @@ struct SkillsView: View {
                     IntroCard(skills: skills)
 
                     ForEach(Array(skills.enumerated()), id: \.offset) { _, skill in
-                        let color = colorFor(name: skill.name)
-                        let icon = iconFor(name: skill.name)
+                        let color = colorFor(id: skill.id)
+                        let icon = iconFor(id: skill.id)
                         SectionHeaderText(verbatim: skill.name) {
                             Image(systemName: icon)
                                 .font(.system(size: 14, weight: .semibold))
@@ -31,27 +31,27 @@ struct SkillsView: View {
         .onAppear { viewModel.loadAll() }
     }
 
-    private func colorFor(name: String) -> Color {
-        switch name {
-        case "AI / LLM":                    return hig.purple
-        case "Architecture / Principles":   return hig.orange
-        case "Kotlin Multiplatform":        return hig.indigo
-        case "Android":                     return hig.green
-        case "iOS":                         return hig.blue
-        case "General / Tools":             return hig.brown
-        default:                            return hig.tint
+    private func colorFor(id: String) -> Color {
+        switch id {
+        case "ai-llm": return hig.purple
+        case "architecture": return hig.orange
+        case "kmp": return hig.indigo
+        case "android": return hig.green
+        case "ios": return hig.blue
+        case "tools": return hig.brown
+        default: return hig.tint
         }
     }
 
-    private func iconFor(name: String) -> String {
-        switch name {
-        case "AI / LLM":                    return "sparkles"
-        case "Architecture / Principles":   return "ruler.fill"
-        case "Kotlin Multiplatform":        return "dot.scope"
-        case "Android":                     return "smartphone"
-        case "iOS":                         return "iphone.gen3"
-        case "General / Tools":             return "wrench.and.screwdriver.fill"
-        default:                            return "bolt.fill"
+    private func iconFor(id: String) -> String {
+        switch id {
+        case "ai-llm": return "sparkles"
+        case "architecture": return "ruler.fill"
+        case "kmp": return "dot.scope"
+        case "android": return "smartphone"
+        case "ios": return "iphone.gen3"
+        case "tools": return "wrench.and.screwdriver.fill"
+        default: return "bolt.fill"
         }
     }
 }

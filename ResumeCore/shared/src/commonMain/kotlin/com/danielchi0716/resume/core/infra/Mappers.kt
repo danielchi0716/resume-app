@@ -116,10 +116,12 @@ internal fun SkillSubcategoryBean.toModel() = SkillSubcategory(label, items)
 
 internal fun SkillBean.toModel(): Skill = when (type) {
     "platform" -> Skill.Platform(
+        id = id,
         name = name,
         subcategories = subcategories.map { it.toModel() },
     )
     "category" -> Skill.Category(
+        id = id,
         name = name,
         tags = tags,
     )
