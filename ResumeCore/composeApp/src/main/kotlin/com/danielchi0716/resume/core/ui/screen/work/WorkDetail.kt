@@ -68,8 +68,7 @@ import com.danielchi0716.resume.core.model.Project
 import com.danielchi0716.resume.core.model.WorkExperience
 import com.danielchi0716.resume.core.model.YearItem
 import com.danielchi0716.resume.core.ui.common.UiState
-import com.danielchi0716.resume.core.ui.common.ErrorState
-import com.danielchi0716.resume.core.ui.common.LoadingState
+import com.danielchi0716.resume.core.ui.common.UiStateContent
 import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.TinyChip
 import com.danielchi0716.resume.core.ui.format.formatDuration
@@ -85,22 +84,22 @@ internal fun WorkDetailView(
     onBack: () -> Unit,
 ) {
     BackHandler(onBack = onBack)
+    val jobs = (uiState as? UiState.Ready)?.data
+    val pagerState = jobs?.let {
+        rememberPagerState(
+            initialPage = initialIdx.coerceIn(0, (it.size - 1).coerceAtLeast(0)),
+            pageCount = { it.size },
+        )
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        when (uiState) {
-            is UiState.Loading -> {
-                DetailTopBar(title = stringResource(R.string.work_detail_title), counter = null, onBack = onBack)
-                LoadingState()
-            }
-            is UiState.Error -> {
-                DetailTopBar(title = stringResource(R.string.work_detail_title), counter = null, onBack = onBack)
-                ErrorState(message = uiState.message, onRetry = onRetry)
-            }
-            is UiState.Ready -> WorkDetailContent(
-                jobs = uiState.data,
-                initialIdx = initialIdx,
-                onBack = onBack,
-            )
+        DetailTopBar(
+            title = stringResource(R.string.work_detail_title),
+            counter = pagerState?.let { "${it.currentPage + 1} / ${jobs.size}" },
+            onBack = onBack,
+        )
+        UiStateContent(state = uiState, onRetry = onRetry) { data ->
+            WorkDetailContent(jobs = data, pagerState = pagerState!!)
         }
     }
 }
@@ -134,54 +133,37 @@ private fun DetailTopBar(title: String, counter: String?, onBack: () -> Unit) {
 }
 
 @Composable
-private fun WorkDetailContent(
-    jobs: List<WorkExperience>,
-    initialIdx: Int,
-    onBack: () -> Unit,
-) {
-    val pagerState = rememberPagerState(
-        initialPage = initialIdx.coerceIn(0, (jobs.size - 1).coerceAtLeast(0)),
-        pageCount = { jobs.size },
-    )
+private fun WorkDetailContent(jobs: List<WorkExperience>, pagerState: PagerState) {
     val scope = rememberCoroutineScope()
-
     Column(modifier = Modifier.fillMaxSize()) {
-            DetailTopBar(
-                title = stringResource(R.string.work_detail_title),
-                counter = "${pagerState.currentPage + 1} / ${jobs.size}",
-                onBack = onBack,
-            )
-
-            JobTabs(
-                jobs = jobs,
-                pagerState = pagerState,
-                onTabClick = { i -> scope.launch { pagerState.animateScrollToPage(i) } },
-            )
-
-            Box(modifier = Modifier.weight(1f)) {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxSize(),
-                ) { page ->
-                    JobPage(job = jobs[page], idx = page)
-                }
-
-                Surface(
-                    color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.92f),
-                    contentColor = MaterialTheme.colorScheme.inverseOnSurface,
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 24.dp),
-                ) {
-                    Text(
-                        text = "← ${stringResource(R.string.swipe_hint)} →",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-                    )
-                }
+        JobTabs(
+            jobs = jobs,
+            pagerState = pagerState,
+            onTabClick = { i -> scope.launch { pagerState.animateScrollToPage(i) } },
+        )
+        Box(modifier = Modifier.weight(1f)) {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize(),
+            ) { page ->
+                JobPage(job = jobs[page], idx = page)
+            }
+            Surface(
+                color = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.92f),
+                contentColor = MaterialTheme.colorScheme.inverseOnSurface,
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp),
+            ) {
+                Text(
+                    text = "← ${stringResource(R.string.swipe_hint)} →",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                )
             }
         }
+    }
 }
 
 @Composable
