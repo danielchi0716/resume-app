@@ -150,53 +150,62 @@ private struct ClosingCard: View {
 
 private struct ArchitectureDiagram: View {
     var body: some View {
-        VStack(spacing: 4) {
-            // KMP core
-            HStack(spacing: 8) {
-                Image(systemName: "circle.hexagongrid.fill")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(HIGColors.light.tint)
-                VStack(alignment: .leading, spacing: 1) {
-                    Text("Kotlin Multiplatform")
-                        .font(.system(size: 12, weight: .bold))
+        Link(destination: URL(string: AppConfig.repoUrl)!) {
+            VStack(spacing: 4) {
+                // KMP core
+                HStack(spacing: 8) {
+                    Image(systemName: "circle.hexagongrid.fill")
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundColor(HIGColors.light.tint)
-                        .tracking(0.2)
-                    Text("Shared Domain · Data")
-                        .font(HIGType.caption2)
-                        .foregroundColor(HIGColors.light.tint.opacity(0.7))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Kotlin Multiplatform")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(HIGColors.light.tint)
+                            .tracking(0.2)
+                        Text("Shared Domain · Data")
+                            .font(HIGType.caption2)
+                            .foregroundColor(HIGColors.light.tint.opacity(0.7))
+                    }
                 }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(
+                    Color.white.opacity(0.95),
+                    in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                )
+                .shadow(color: .black.opacity(0.12), radius: 3, y: 2)
+
+                // Connecting dashed lines
+                ZStack {
+                    ConnectorLines()
+                }
+                .frame(height: 34)
+
+                // Platform circles
+                HStack {
+                    PlatformCircle(systemImage: "smartphone", label: "platform.android")
+                    Spacer()
+                    PlatformCircle(systemImage: "iphone.gen3", label: "platform.ios")
+                }
+                .padding(.horizontal, 28)
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
+            .padding(EdgeInsets(top: 16, leading: 14, bottom: 18, trailing: 14))
             .background(
-                Color.white.opacity(0.95),
-                in: RoundedRectangle(cornerRadius: 10, style: .continuous)
+                Color.white.opacity(0.12),
+                in: RoundedRectangle(cornerRadius: 16, style: .continuous)
             )
-            .shadow(color: .black.opacity(0.12), radius: 3, y: 2)
-
-            // Connecting dashed lines
-            ZStack {
-                ConnectorLines()
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.white.opacity(0.22), lineWidth: 0.5)
+            )
+            .overlay(alignment: .topTrailing) {
+                Image(systemName: "arrow.up.right.square")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.white.opacity(0.8))
+                    .padding(EdgeInsets(top: 10, leading: 0, bottom: 0, trailing: 12))
             }
-            .frame(height: 34)
-
-            // Platform circles
-            HStack {
-                PlatformCircle(systemImage: "smartphone", label: "platform.android")
-                Spacer()
-                PlatformCircle(systemImage: "iphone.gen3", label: "platform.ios")
-            }
-            .padding(.horizontal, 28)
         }
-        .padding(EdgeInsets(top: 16, leading: 14, bottom: 18, trailing: 14))
-        .background(
-            Color.white.opacity(0.12),
-            in: RoundedRectangle(cornerRadius: 16, style: .continuous)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.white.opacity(0.22), lineWidth: 0.5)
-        )
+        .buttonStyle(.plain)
     }
 }
 
