@@ -9,20 +9,26 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -59,7 +65,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -348,37 +356,40 @@ private fun ProjectExpandableCard(project: Project) {
 
 @Composable
 private fun YearTimeline(items: List<YearItem>) {
-    Column(modifier = Modifier.padding(start = 12.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        items.forEach { it ->
-            Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                Box(
+    Column(modifier = Modifier.padding(start = 12.dp)) {
+        items.forEachIndexed { idx, item ->
+            val isFirst = idx == 0
+            val isLast = idx == items.lastIndex
+            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+                TimelineRail(isFirst = isFirst, isLast = isLast)
+                Spacer(modifier = Modifier.width(14.dp))
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier
-                        .padding(top = 6.dp)
-                        .size(12.dp)
-                        .background(MaterialTheme.colorScheme.primary, CircleShape),
-                )
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.weight(1f)) {
+                        .weight(1f)
+                        .padding(bottom = if (isLast) 0.dp else 16.dp),
+                ) {
                     Text(
-                        text = it.years.joinToString(" ─ "),
+                        text = item.years.joinToString(" ─ "),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.SemiBold,
                     )
                     Text(
-                        text = it.title,
+                        text = item.title,
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
-                    it.description?.takeIf { d -> d.isNotBlank() }?.let { description ->
+                    item.description?.takeIf { d -> d.isNotBlank() }?.let { description ->
                         Text(
                             text = description,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    if (it.bullets.isNotEmpty()) {
+                    if (item.bullets.isNotEmpty()) {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            it.bullets.forEach { b ->
+                            item.bullets.forEach { b ->
                                 Text(
                                     text = "· $b",
                                     style = MaterialTheme.typography.bodySmall,
@@ -387,12 +398,67 @@ private fun YearTimeline(items: List<YearItem>) {
                             }
                         }
                     }
-                    if (it.tags.isNotEmpty()) {
-                        TagFlow(tags = it.tags)
+                    if (item.tags.isNotEmpty()) {
+                        TagFlow(tags = item.tags)
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TimelineRail(isFirst: Boolean, isLast: Boolean) {
+    val lineColor = MaterialTheme.colorScheme.outlineVariant
+    Column(
+        modifier = Modifier
+            .width(12.dp)
+            .fillMaxHeight(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        if (isFirst) {
+            Spacer(modifier = Modifier.height(6.dp))
+        } else {
+            DashedVerticalLine(
+                modifier = Modifier.fillMaxWidth().height(6.dp),
+                color = lineColor,
+            )
+        }
+        Box(modifier = Modifier.size(12.dp), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .background(MaterialTheme.colorScheme.surface, CircleShape)
+                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
+            )
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape),
+            )
+        }
+        if (isLast) {
+            Spacer(modifier = Modifier.weight(1f))
+        } else {
+            DashedVerticalLine(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                color = lineColor,
+            )
+        }
+    }
+}
+
+@Composable
+private fun DashedVerticalLine(modifier: Modifier, color: Color) {
+    Canvas(modifier = modifier) {
+        val x = size.width / 2f
+        drawLine(
+            color = color,
+            start = Offset(x, 0f),
+            end = Offset(x, size.height),
+            strokeWidth = 2.dp.toPx(),
+            pathEffect = PathEffect.dashPathEffect(floatArrayOf(4.dp.toPx(), 3.dp.toPx()), 0f),
+        )
     }
 }
 
