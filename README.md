@@ -25,7 +25,7 @@ resume-app/
 
 ## 設定
 
-所有 build 都需要以下三個變數,以環境變數或 `ResumeCore/local.properties` 提供:
+三個平台都需要以下三個變數,但解析來源不同:
 
 | Key | 說明 |
 |---|---|
@@ -33,7 +33,13 @@ resume-app/
 | `RESUME_SHARE_URL` | Share intent 對外 URL |
 | `RESUME_REPO_URL` | Repo URL(顯示在 More 頁面) |
 
-`ResumeCore/local.properties` 範例(此檔**不入版控**):
+| 平台 | 解析來源 |
+|---|---|
+| **Android** | 環境變數 > `ResumeCore/local.properties`(Gradle 讀) |
+| **Web**(`render-config.sh`) | 環境變數 > `ResumeCore/local.properties` |
+| **iOS**(`render-appconfig.sh`) | 環境變數 > **互動式輸入**(刻意不讀 `local.properties`,iOS 視為獨立專案) |
+
+`ResumeCore/local.properties` 範例(Android / Web 共用,**不入版控**):
 
 ```properties
 sdk.dir=/path/to/Android/sdk
@@ -43,7 +49,6 @@ RESUME_SHARE_URL=https://resume.danielchi0716.workers.dev/
 RESUME_REPO_URL=https://github.com/danielchi0716/resume-app
 ```
 
-解析順序:**環境變數優先,其次讀 `local.properties`**;本機開發用後者。
 CI 不讀此檔 —— `RESUME_DATA_HOST` / `RESUME_SHARE_URL` 由 repo Variables
 (`${{ vars.RESUME_* }}`)注入,`RESUME_REPO_URL` 由 GitHub context
 (`${{ github.server_url }}/${{ github.repository }}`)推導。
@@ -80,7 +85,9 @@ cd ResumeCore/iosApp
 open iosApp.xcodeproj
 ```
 
-`AppConfig.xcconfig` 由 template 渲染產出(讀同樣的三個 `RESUME_*` 變數),不入版控。修改設定值後重跑腳本即可。
+`AppConfig.xcconfig` 由 template 渲染產出,不入版控。腳本依序處理三個 `RESUME_*` 變數:
+有設環境變數就用,沒設就在 terminal 互動式詢問(留白會重問)。**不會讀 `local.properties`** ——
+iOS 視為獨立專案,不跟 Android 共用設定檔。修改值後重跑腳本即可。
 
 ### Web
 

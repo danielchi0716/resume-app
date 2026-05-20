@@ -1,34 +1,28 @@
 #!/usr/bin/env bash
 # Render ResumeCore/iosApp/Configuration/AppConfig.xcconfig from AppConfig.xcconfig.template.
-# Resolution order per key: env var > ResumeCore/local.properties.
-# If a key is set in neither, the script aborts.
-# Used by GitHub Actions iOS build job and during local Xcode setup.
+# Resolution order per key: env var > interactive prompt.
+# Used by GitHub Actions iOS build job (env vars) and during local Xcode setup
+# (interactive). The iOS project intentionally does NOT read local.properties —
+# that file belongs to the Android (Gradle) project.
 
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 TEMPLATE="$ROOT/ResumeCore/iosApp/Configuration/AppConfig.xcconfig.template"
 OUTPUT="$ROOT/ResumeCore/iosApp/Configuration/AppConfig.xcconfig"
-LOCAL_PROPS="$ROOT/ResumeCore/local.properties"
 
-read_local_prop() {
-  local key="$1"
-  [[ -f "$LOCAL_PROPS" ]] || return 1
-  # Match `key=value` ignoring leading whitespace and comments.
-  local line
-  line=$(grep -E "^[[:space:]]*${key}[[:space:]]*=" "$LOCAL_PROPS" | head -n1 || true)
-  [[ -n "$line" ]] || return 1
-  printf '%s' "${line#*=}" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//'
-}
-
+# Resolve a required value. Env var wins; otherwise prompt interactively.
+# Aborts when neither env nor a TTY is available (CI / non-interactive shell).
 require() {
   local key="$1" val=""
   if [[ -n "${!key:-}" ]]; then
     val="${!key}"
-  elif val=$(read_local_prop "$key"); then
-    :
+  elif [[ -t 0 ]]; then
+    while [[ -z "$val" ]]; do
+      read -r -p "$key: " val
+    done
   else
-    echo "Missing required config '$key'. Set it as an env var (CI) or in ResumeCore/local.properties (local)." >&2
+    echo "Missing required config '$key'. Set it as an env var (CI) or run this script in an interactive shell." >&2
     exit 1
   fi
   printf '%s' "$val"
