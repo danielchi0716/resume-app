@@ -11,6 +11,14 @@ const UI_LABELS = {
       languages: '語言能力 Languages',
       about: '自傳 About Me',
     },
+    skillNames: {
+      'ai-llm': 'AI / LLM',
+      'architecture': '架構 / 原則',
+      'kmp': 'Kotlin Multiplatform',
+      'android': 'Android',
+      'ios': 'iOS',
+      'tools': '通用 / 工具',
+    },
     language: {
       names: { zh: '中文', en: '英文' },
       native: '母語',
@@ -27,6 +35,14 @@ const UI_LABELS = {
       education: 'Education',
       languages: 'Languages',
       about: 'About Me',
+    },
+    skillNames: {
+      'ai-llm': 'AI / LLM',
+      'architecture': 'Architecture / Principles',
+      'kmp': 'Kotlin Multiplatform',
+      'android': 'Android',
+      'ios': 'iOS',
+      'tools': 'General / Tools',
     },
     language: {
       names: { zh: 'Chinese', en: 'English' },
@@ -249,9 +265,10 @@ function renderSideProjects(rootEl, sideProjects, labels) {
 function renderSkills(rootEl, skills, labels) {
   renderSectionTitle(rootEl, labels.sections.technicalSkills);
   skills.forEach(group => {
+    const name = labels.skillNames[group.id] || group.id;
     if (group.type === 'platform') {
       const platform = el('div', 'skills-platform');
-      platform.appendChild(el('div', 'skills-platform-title', group.name));
+      platform.appendChild(el('div', 'skills-platform-title', name));
       const subWrap = el('div', 'skills-subcategories');
       group.subcategories.forEach(sub => {
         const subBlock = el('div', 'skills-sub');
@@ -265,7 +282,7 @@ function renderSkills(rootEl, skills, labels) {
       rootEl.appendChild(platform);
     } else if (group.type === 'category') {
       const cat = el('div', 'skills-category');
-      cat.appendChild(el('div', 'skills-label', group.name));
+      cat.appendChild(el('div', 'skills-label', name));
       cat.appendChild(tagList(group.tags, 'skills-tags', 'tag'));
       rootEl.appendChild(cat);
     }
