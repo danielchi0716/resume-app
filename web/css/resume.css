@@ -582,10 +582,15 @@ html[lang="zh-Hant"] .about-content p {
   body {
     background: #fff;
   }
+  /* Force Chrome / Safari to keep gradients and background colors when
+     exporting to PDF; without this the header strip, skill cards, and
+     language badge all flatten to white. */
   .resume {
     margin: 0;
     box-shadow: none;
     border-radius: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   .lang-switch,
   .platform-links {
