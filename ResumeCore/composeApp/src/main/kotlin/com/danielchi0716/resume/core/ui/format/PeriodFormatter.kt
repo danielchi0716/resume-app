@@ -5,12 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.danielchi0716.resume.core.R
 import com.danielchi0716.resume.core.model.Period
-import com.danielchi0716.resume.core.model.YearMonth
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.number
+import kotlinx.datetime.toJavaYearMonth
+import kotlinx.datetime.toKotlinYearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.time.YearMonth as JavaYearMonth
-
-fun YearMonth.toJavaYearMonth(): JavaYearMonth = JavaYearMonth.of(year, month)
 
 /**
  * Locale-native abbreviated month + year, e.g. "Mar 2020" (en) or "2020年3月" (zh-Hant).
@@ -44,12 +45,9 @@ fun yearRangeShort(period: Period): String {
 }
 
 private fun monthsBetween(start: YearMonth, end: YearMonth): Int =
-    (end.year - start.year) * 12 + (end.month - start.month)
+    (end.year - start.year) * 12 + (end.month.number - start.month.number)
 
-internal fun nowYearMonth(): YearMonth {
-    val now = JavaYearMonth.now()
-    return YearMonth(now.year, now.monthValue)
-}
+internal fun nowYearMonth(): YearMonth = JavaYearMonth.now().toKotlinYearMonth()
 
 internal fun totalMonthsAtNow(period: Period): Int {
     val end = period.end ?: nowYearMonth()

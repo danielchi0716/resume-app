@@ -1,11 +1,13 @@
 import Foundation
 import Shared
 
-extension YearMonth {
+typealias YearMonth = Kotlinx_datetimeYearMonth
+
+extension Kotlinx_datetimeYearMonth {
     /// Anchored to the 1st day of the month at 00:00 in the gregorian calendar.
     var toDate: Date {
         Calendar(identifier: .gregorian).date(
-            from: DateComponents(year: Int(year), month: Int(month))
+            from: DateComponents(year: Int(year), month: Int(month.ordinal) + 1)
         ) ?? Date()
     }
 

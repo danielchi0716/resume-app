@@ -52,6 +52,7 @@ import com.danielchi0716.resume.core.ui.common.rememberDataLocale
 import com.danielchi0716.resume.core.ui.format.formatDuration
 import com.danielchi0716.resume.core.ui.format.formatted
 import com.danielchi0716.resume.core.ui.format.nowYearMonth
+import kotlinx.datetime.number
 import kotlinx.serialization.Serializable
 
 @Serializable private data object WorkListRoute : NavKey
@@ -251,9 +252,9 @@ private fun JobListCard(
 
 private fun computeTotalYears(jobs: List<WorkExperience>): Int {
     if (jobs.isEmpty()) return 0
-    val earliest = jobs.minOf { it.period.start.year * 12 + it.period.start.month }
+    val earliest = jobs.minOf { it.period.start.year * 12 + it.period.start.month.number }
     val now = nowYearMonth()
-    val latest = jobs.maxOf { (it.period.end ?: now).let { e -> e.year * 12 + e.month } }
+    val latest = jobs.maxOf { (it.period.end ?: now).let { e -> e.year * 12 + e.month.number } }
     val totalMonths = (latest - earliest).coerceAtLeast(0)
     return totalMonths / 12
 }

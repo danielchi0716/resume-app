@@ -2,6 +2,7 @@
 
 package com.danielchi0716.resume.core.model
 
+import kotlinx.datetime.YearMonth
 import kotlin.jvm.JvmInline
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -15,25 +16,6 @@ enum class ContactType {
     GITHUB,
     LINKEDIN,
     UNKNOWN,
-}
-
-data class YearMonth(val year: Int, val month: Int) : Comparable<YearMonth> {
-    init {
-        require(month in 1..12) { "month must be 1..12, got $month" }
-    }
-
-    override fun compareTo(other: YearMonth): Int =
-        compareValuesBy(this, other, YearMonth::year, YearMonth::month)
-
-    override fun toString(): String = "$year-${month.toString().padStart(2, '0')}"
-
-    companion object {
-        fun parse(input: String): YearMonth {
-            val parts = input.split('-')
-            require(parts.size == 2) { "Expected 'yyyy-MM', got '$input'" }
-            return YearMonth(parts[0].toInt(), parts[1].toInt())
-        }
-    }
 }
 
 data class Period(

@@ -23,7 +23,7 @@ import com.danielchi0716.resume.core.model.Tagline
 import com.danielchi0716.resume.core.model.Url
 import com.danielchi0716.resume.core.model.WorkExperience
 import com.danielchi0716.resume.core.model.YearItem
-import com.danielchi0716.resume.core.model.YearMonth
+import kotlinx.datetime.YearMonth
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
