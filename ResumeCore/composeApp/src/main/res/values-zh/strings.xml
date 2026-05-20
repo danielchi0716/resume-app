@@ -74,8 +74,6 @@
     <string name="lang_en">English</string>
 
     <!-- Share intent -->
-    <string name="share_title">紀賀元 Daniel Chi · Resume</string>
-    <string name="share_text">Senior App Engineer · 8+ 年雙平台 App 開發</string>
     <string name="share_copied">已複製履歷連結 ✓</string>
 
     <!-- Error state -->

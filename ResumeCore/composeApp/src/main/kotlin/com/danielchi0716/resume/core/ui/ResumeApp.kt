@@ -26,10 +26,12 @@ import androidx.core.os.LocaleListCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.danielchi0716.resume.core.AppViewModel
 import com.danielchi0716.resume.core.R
+import com.danielchi0716.resume.core.model.Header
 import com.danielchi0716.resume.core.model.Locale
 import com.danielchi0716.resume.core.ui.common.AppActions
 import com.danielchi0716.resume.core.ui.common.LocalAppActions
 import com.danielchi0716.resume.core.ui.common.LocalResumeSetting
+import com.danielchi0716.resume.core.ui.common.rememberDataLocale
 import com.danielchi0716.resume.core.ui.screen.more.MoreScreen
 import com.danielchi0716.resume.core.ui.screen.profile.ProfileScreen
 import com.danielchi0716.resume.core.ui.screen.skills.SkillsScreen
@@ -40,15 +42,14 @@ import kotlinx.coroutines.launch
 @Preview
 @Composable
 fun ResumeApp() {
-    val appVm: AppViewModel = hiltViewModel()
+    val locale = rememberDataLocale()
+    val appVm: AppViewModel = hiltViewModel(key = locale.code)
     val themeMode by appVm.themeMode.collectAsState()
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbar = remember { SnackbarHostState() }
     val shareUrl = appVm.setting.shareUrl
-    val shareTitle = stringResource(R.string.share_title)
-    val shareText = stringResource(R.string.share_text)
     val shareCopied = stringResource(R.string.share_copied)
 
     val appActions = remember(appVm) {
@@ -56,7 +57,13 @@ fun ResumeApp() {
             onLocaleChange = ::applyAppLocale,
             onThemeChange = appVm::setThemeMode,
             onShare = {
-                val sent = sendShareIntent(context, shareTitle, shareText, shareUrl)
+                val header = appVm.header.value
+                val sent = sendShareIntent(
+                    context,
+                    composeShareTitle(header),
+                    composeShareText(header),
+                    shareUrl,
+                )
                 if (!sent) {
                     copyToClipboard(context, shareUrl)
                     scope.launch { snackbar.showSnackbar(shareCopied) }
@@ -99,6 +106,15 @@ private fun applyAppLocale(locale: Locale) {
     }
     AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
 }
+
+private fun composeShareTitle(header: Header?): String = when {
+    header == null -> "Resume"
+    header.name == header.englishName -> "${header.name} · Resume"
+    else -> "${header.name} ${header.englishName} · Resume"
+}
+
+private fun composeShareText(header: Header?): String =
+    header?.let { "${it.subtitle} · ${it.tagline.text}" } ?: ""
 
 private fun sendShareIntent(context: Context, title: String, text: String, url: String): Boolean {
     return runCatching {
