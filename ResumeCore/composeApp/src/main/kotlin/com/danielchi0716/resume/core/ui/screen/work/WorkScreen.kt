@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -49,7 +50,7 @@ import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.TinyChip
 import com.danielchi0716.resume.core.ui.common.rememberDataLocale
 import com.danielchi0716.resume.core.ui.format.formatDuration
-import com.danielchi0716.resume.core.ui.format.formatPeriod
+import com.danielchi0716.resume.core.ui.format.formatted
 import com.danielchi0716.resume.core.ui.format.nowYearMonth
 import kotlinx.serialization.Serializable
 
@@ -211,8 +212,12 @@ private fun JobListCard(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                val locale = LocalConfiguration.current.locales[0]
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TinyChip(text = formatPeriod(job.period))
+                    TinyChip(
+                        text = "${job.period.start.formatted(locale)} ─ " +
+                            (job.period.end?.formatted(locale) ?: stringResource(R.string.period_present)),
+                    )
                     TinyChip(text = formatDuration(job.period))
                 }
                 if (job.bullets.isNotEmpty()) {

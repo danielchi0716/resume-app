@@ -68,6 +68,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -80,7 +81,7 @@ import com.danielchi0716.resume.core.ui.common.UiStateContent
 import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.TinyChip
 import com.danielchi0716.resume.core.ui.format.formatDuration
-import com.danielchi0716.resume.core.ui.format.formatPeriod
+import com.danielchi0716.resume.core.ui.format.formatted
 import com.danielchi0716.resume.core.ui.format.yearRangeShort
 import kotlinx.coroutines.launch
 
@@ -243,8 +244,12 @@ private fun JobPage(job: WorkExperience, idx: Int) {
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
+                        val locale = LocalConfiguration.current.locales[0]
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            TinyChip(text = formatPeriod(job.period))
+                            TinyChip(
+                                text = "${job.period.start.formatted(locale)} ─ " +
+                                    (job.period.end?.formatted(locale) ?: stringResource(R.string.period_present)),
+                            )
                             TinyChip(text = formatDuration(job.period))
                         }
                     }
@@ -319,7 +324,9 @@ private fun ProjectExpandableCard(project: Project) {
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
-                    val periodLabel = formatPeriod(project.period)
+                    val locale = LocalConfiguration.current.locales[0]
+                    val periodLabel = "${project.period.start.formatted(locale)} ─ " +
+                        (project.period.end?.formatted(locale) ?: stringResource(R.string.period_present))
                     val supporting = if (!project.summary.isNullOrBlank()) {
                         "$periodLabel · ${project.summary}"
                     } else {

@@ -46,6 +46,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -69,7 +70,7 @@ import com.danielchi0716.resume.core.ui.common.UiStateContent
 import com.danielchi0716.resume.core.ui.common.ResumeTopAppBar
 import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.rememberDataLocale
-import com.danielchi0716.resume.core.ui.format.formatPeriod
+import com.danielchi0716.resume.core.ui.format.formatted
 
 @Composable
 fun ProfileScreen() {
@@ -292,6 +293,7 @@ private fun LanguagesSection(languages: List<Language>) {
 
 @Composable
 private fun EducationSection(education: List<Education>) {
+    val locale = LocalConfiguration.current.locales[0]
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
         SectionLabel(text = stringResource(R.string.section_education), modifier = Modifier.padding(bottom = 12.dp))
         OutlinedCard(
@@ -335,7 +337,8 @@ private fun EducationSection(education: List<Education>) {
                             modifier = Modifier.padding(top = 2.dp),
                         )
                         Text(
-                            text = formatPeriod(e.period),
+                            text = "${e.period.start.formatted(locale)} ─ " +
+                                (e.period.end?.formatted(locale) ?: stringResource(R.string.period_present)),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp),

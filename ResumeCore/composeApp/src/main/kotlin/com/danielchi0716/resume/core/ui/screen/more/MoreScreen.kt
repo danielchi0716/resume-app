@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -75,7 +76,7 @@ import com.danielchi0716.resume.core.ui.common.ResumeTopAppBar
 import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.TinyChip
 import com.danielchi0716.resume.core.ui.common.rememberDataLocale
-import com.danielchi0716.resume.core.ui.format.formatPeriod
+import com.danielchi0716.resume.core.ui.format.formatted
 
 @Composable
 fun MoreScreen() {
@@ -191,7 +192,11 @@ private fun SideProjectCard(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    TinyChip(text = formatPeriod(project.period))
+                    val locale = LocalConfiguration.current.locales[0]
+                    TinyChip(
+                        text = "${project.period.start.formatted(locale)} ─ " +
+                            (project.period.end?.formatted(locale) ?: stringResource(R.string.period_present)),
+                    )
                 }
                 Icon(
                     imageVector = Icons.Filled.ExpandMore,

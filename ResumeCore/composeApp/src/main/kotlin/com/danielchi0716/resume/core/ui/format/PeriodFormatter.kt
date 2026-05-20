@@ -1,28 +1,24 @@
 package com.danielchi0716.resume.core.ui.format
 
+import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import com.danielchi0716.resume.core.R
 import com.danielchi0716.resume.core.model.Period
 import com.danielchi0716.resume.core.model.YearMonth
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+import java.time.YearMonth as JavaYearMonth
 
-private val EnMonthShort = listOf(
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-)
+fun YearMonth.toJavaYearMonth(): JavaYearMonth = JavaYearMonth.of(year, month)
 
-@Composable
-fun isChineseLocale(): Boolean {
-    val cfg = LocalConfiguration.current
-    return cfg.locales[0].language.equals("zh", ignoreCase = true)
-}
-
-@Composable
-fun formatPeriod(period: Period): String {
-    val useChinese = isChineseLocale()
-    val present = stringResource(R.string.period_present)
-    return formatPeriodInternal(period, useChinese, present)
+/**
+ * Locale-native abbreviated month + year, e.g. "Mar 2020" (en) or "2020年3月" (zh-Hant).
+ * Pattern is resolved per locale via `DateFormat.getBestDateTimePattern`; no manual branching.
+ */
+fun YearMonth.formatted(locale: Locale): String {
+    val pattern = DateFormat.getBestDateTimePattern(locale, "yMMM")
+    return toJavaYearMonth().format(DateTimeFormatter.ofPattern(pattern, locale))
 }
 
 @Composable
@@ -47,38 +43,12 @@ fun yearRangeShort(period: Period): String {
     }
 }
 
-private fun formatPeriodInternal(
-    period: Period,
-    useChinese: Boolean,
-    presentLabel: String,
-): String {
-    val start = period.start
-    val end = period.end
-    val startsInJan = start.month == 1
-    val endsInDec = end != null && end.month == 12
-    if (startsInJan && (endsInDec || end == null)) {
-        return when {
-            end == null || start.year == end.year -> "${start.year}"
-            else -> "${start.year} ─ ${end.year}"
-        }
-    }
-    val endLabel = end?.let { formatYearMonth(it, useChinese) } ?: presentLabel
-    return "${formatYearMonth(start, useChinese)} ─ $endLabel"
-}
-
-private fun formatYearMonth(ym: YearMonth, useChinese: Boolean): String =
-    if (useChinese) "${ym.year}/${ym.month.toString().padStart(2, '0')}"
-    else "${EnMonthShort[ym.month - 1]} ${ym.year}"
-
 private fun monthsBetween(start: YearMonth, end: YearMonth): Int =
     (end.year - start.year) * 12 + (end.month - start.month)
 
 internal fun nowYearMonth(): YearMonth {
-    val cal = java.util.Calendar.getInstance()
-    return YearMonth(
-        cal.get(java.util.Calendar.YEAR),
-        cal.get(java.util.Calendar.MONTH) + 1,
-    )
+    val now = JavaYearMonth.now()
+    return YearMonth(now.year, now.monthValue)
 }
 
 internal fun totalMonthsAtNow(period: Period): Int {
