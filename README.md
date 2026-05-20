@@ -1,4 +1,4 @@
-# resume-app
+# 紀賀元 Daniel Chi · Cross-Platform Resume
 
 跨平台履歷展示專案 —— 同一份履歷資料以三種 client 呈現:Android app、iOS app、靜態網頁。
 
