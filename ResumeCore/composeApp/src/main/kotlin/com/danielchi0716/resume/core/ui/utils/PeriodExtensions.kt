@@ -21,7 +21,6 @@ import java.util.Locale
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-/** Year-month derived from [Clock.System] in the current system time zone. */
 fun currentYearMonth(): YearMonth {
     val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
     return YearMonth(today.year, today.month)

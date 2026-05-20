@@ -45,11 +45,6 @@ import com.danielchi0716.resume.core.ui.common.LocalAppActions
 import com.danielchi0716.resume.core.ui.theme.LocalThemeMode
 import com.danielchi0716.resume.core.ui.theme.ThemeMode
 
-/**
- * Standard tab-page TopAppBar: leading circular page icon + center title + overflow menu.
- * Each tab screen calls this with its own title + icon. Overflow menu actions are
- * pulled from [LocalAppActions] so screens don't need to thread share/locale/theme through.
- */
 @Composable
 fun ResumeTopAppBar(
     title: String,
