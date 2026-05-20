@@ -382,7 +382,13 @@ async function loadResume(lang) {
   }
 }
 
+function renderPlatformLinks() {
+  const el = document.getElementById('platform-links');
+  if (el) el.href = window.RESUME_CONFIG.repoUrl;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  renderPlatformLinks();
   const lang = document.documentElement.lang === 'zh-Hant' ? 'tc' : 'en';
   loadResume(lang);
 });

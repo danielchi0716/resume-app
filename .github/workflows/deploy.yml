@@ -57,6 +57,7 @@ jobs:
       - name: Render config.js from template
         env:
           RESUME_DATA_HOST: ${{ vars.RESUME_DATA_HOST }}
+          RESUME_REPO_URL: ${{ github.server_url }}/${{ github.repository }}
           RESUME_VERSION: ${{ needs.version.outputs.version }}
         run: ./web/scripts/render-config.sh
 

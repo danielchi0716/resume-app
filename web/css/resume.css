@@ -530,6 +530,45 @@ html[lang="zh-Hant"] .about-content p {
   font-weight: 600;
 }
 
+/* Cross-platform link: shows current Web + Android/iOS, all links to the repo. */
+.platform-links {
+  position: fixed;
+  top: 56px;
+  right: 16px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #d5dbe6;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #5d6b85;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.platform-links:hover {
+  background: #f0f4ff;
+}
+
+.platform-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.platform-item svg {
+  width: 13px;
+  height: 13px;
+}
+
+.platform-current {
+  color: #4fc3f7;
+  font-weight: 600;
+}
+
 /* Print styles */
 .page-break-before {
   page-break-before: always;
@@ -548,7 +587,8 @@ html[lang="zh-Hant"] .about-content p {
     box-shadow: none;
     border-radius: 0;
   }
-  .lang-switch {
+  .lang-switch,
+  .platform-links {
     display: none;
   }
 }

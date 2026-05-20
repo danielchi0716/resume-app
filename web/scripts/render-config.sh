@@ -37,6 +37,7 @@ require() {
 DATA_HOST=$(require RESUME_DATA_HOST)
 # config.js needs an origin (scheme + host); local.properties stores host only.
 DATA_ORIGIN="https://${DATA_HOST}"
+REPO_URL=$(require RESUME_REPO_URL)
 VERSION=$(require RESUME_VERSION)
 
 # Escape `&` and `|` so they survive sed substitution.
@@ -44,7 +45,8 @@ escape() { printf '%s' "$1" | sed -e 's/[\\&|]/\\&/g'; }
 
 sed \
   -e "s|__RESUME_DATA_ORIGIN__|$(escape "$DATA_ORIGIN")|g" \
+  -e "s|__RESUME_REPO_URL__|$(escape "$REPO_URL")|g" \
   -e "s|__RESUME_VERSION__|$(escape "$VERSION")|g" \
   "$TEMPLATE" > "$OUTPUT"
 
-echo "Wrote $OUTPUT (dataOrigin=$DATA_ORIGIN, version=$VERSION)"
+echo "Wrote $OUTPUT (dataOrigin=$DATA_ORIGIN, repoUrl=$REPO_URL, version=$VERSION)"
