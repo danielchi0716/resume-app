@@ -49,9 +49,9 @@ import com.danielchi0716.resume.core.ui.common.ResumeTopAppBar
 import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.TinyChip
 import com.danielchi0716.resume.core.ui.common.rememberDataLocale
-import com.danielchi0716.resume.core.ui.format.formatDuration
-import com.danielchi0716.resume.core.ui.format.formatted
-import com.danielchi0716.resume.core.ui.format.nowYearMonth
+import com.danielchi0716.resume.core.ui.utils.currentYearMonth
+import com.danielchi0716.resume.core.ui.utils.formatted
+import com.danielchi0716.resume.core.ui.utils.toYearMonthRange
 import kotlinx.datetime.number
 import kotlinx.serialization.Serializable
 
@@ -215,11 +215,8 @@ private fun JobListCard(
                 )
                 val locale = LocalConfiguration.current.locales[0]
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TinyChip(
-                        text = "${job.period.start.formatted(locale)} ─ " +
-                            (job.period.end?.formatted(locale) ?: stringResource(R.string.period_present)),
-                    )
-                    TinyChip(text = formatDuration(job.period))
+                    TinyChip(text = job.period.formatted(locale))
+                    TinyChip(text = job.period.toYearMonthRange().formatted(locale))
                 }
                 if (job.bullets.isNotEmpty()) {
                     Text(
@@ -253,7 +250,7 @@ private fun JobListCard(
 private fun computeTotalYears(jobs: List<WorkExperience>): Int {
     if (jobs.isEmpty()) return 0
     val earliest = jobs.minOf { it.period.start.year * 12 + it.period.start.month.number }
-    val now = nowYearMonth()
+    val now = currentYearMonth()
     val latest = jobs.maxOf { (it.period.end ?: now).let { e -> e.year * 12 + e.month.number } }
     val totalMonths = (latest - earliest).coerceAtLeast(0)
     return totalMonths / 12

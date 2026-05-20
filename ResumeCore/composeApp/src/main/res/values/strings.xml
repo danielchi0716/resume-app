@@ -36,9 +36,6 @@
 
     <!-- Period & duration -->
     <string name="period_present">Present</string>
-    <string name="duration_years_months">%1$dy %2$dm</string>
-    <string name="duration_years">%1$dy</string>
-    <string name="duration_months">%1$dm</string>
 
     <!-- Skills -->
     <string name="filter_all">All</string>

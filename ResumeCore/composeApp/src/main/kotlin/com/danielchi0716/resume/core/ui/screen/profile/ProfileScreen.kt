@@ -70,7 +70,7 @@ import com.danielchi0716.resume.core.ui.common.UiStateContent
 import com.danielchi0716.resume.core.ui.common.ResumeTopAppBar
 import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.rememberDataLocale
-import com.danielchi0716.resume.core.ui.format.formatted
+import com.danielchi0716.resume.core.ui.utils.formatted
 
 @Composable
 fun ProfileScreen() {
@@ -337,8 +337,7 @@ private fun EducationSection(education: List<Education>) {
                             modifier = Modifier.padding(top = 2.dp),
                         )
                         Text(
-                            text = "${e.period.start.formatted(locale)} ─ " +
-                                (e.period.end?.formatted(locale) ?: stringResource(R.string.period_present)),
+                            text = e.period.formatted(locale),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp),

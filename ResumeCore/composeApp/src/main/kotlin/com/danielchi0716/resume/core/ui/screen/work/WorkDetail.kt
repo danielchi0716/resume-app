@@ -80,9 +80,8 @@ import com.danielchi0716.resume.core.ui.common.UiState
 import com.danielchi0716.resume.core.ui.common.UiStateContent
 import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.TinyChip
-import com.danielchi0716.resume.core.ui.format.formatDuration
-import com.danielchi0716.resume.core.ui.format.formatted
-import com.danielchi0716.resume.core.ui.format.yearRangeShort
+import com.danielchi0716.resume.core.ui.utils.formatted
+import com.danielchi0716.resume.core.ui.utils.toYearMonthRange
 import kotlinx.coroutines.launch
 
 @Composable
@@ -167,6 +166,7 @@ private fun JobTabs(
     pagerState: PagerState,
     onTabClick: (Int) -> Unit,
 ) {
+    val locale = LocalConfiguration.current.locales[0]
     SecondaryTabRow(
         selectedTabIndex = pagerState.currentPage,
         containerColor = MaterialTheme.colorScheme.surface,
@@ -190,7 +190,7 @@ private fun JobTabs(
                         fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
                     )
                     Text(
-                        text = yearRangeShort(job.period),
+                        text = job.period.formatted(locale),
                         style = MaterialTheme.typography.labelSmall,
                         color = if (active) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.onSurfaceVariant,
@@ -246,11 +246,8 @@ private fun JobPage(job: WorkExperience, idx: Int) {
                         )
                         val locale = LocalConfiguration.current.locales[0]
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            TinyChip(
-                                text = "${job.period.start.formatted(locale)} ─ " +
-                                    (job.period.end?.formatted(locale) ?: stringResource(R.string.period_present)),
-                            )
-                            TinyChip(text = formatDuration(job.period))
+                            TinyChip(text = job.period.formatted(locale))
+                            TinyChip(text = job.period.toYearMonthRange().formatted(locale))
                         }
                     }
                 }
@@ -325,8 +322,7 @@ private fun ProjectExpandableCard(project: Project) {
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     val locale = LocalConfiguration.current.locales[0]
-                    val periodLabel = "${project.period.start.formatted(locale)} ─ " +
-                        (project.period.end?.formatted(locale) ?: stringResource(R.string.period_present))
+                    val periodLabel = project.period.formatted(locale)
                     val supporting = if (!project.summary.isNullOrBlank()) {
                         "$periodLabel · ${project.summary}"
                     } else {

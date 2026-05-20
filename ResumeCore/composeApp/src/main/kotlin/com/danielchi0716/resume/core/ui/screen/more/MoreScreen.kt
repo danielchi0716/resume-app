@@ -76,7 +76,7 @@ import com.danielchi0716.resume.core.ui.common.ResumeTopAppBar
 import com.danielchi0716.resume.core.ui.common.SectionLabel
 import com.danielchi0716.resume.core.ui.common.TinyChip
 import com.danielchi0716.resume.core.ui.common.rememberDataLocale
-import com.danielchi0716.resume.core.ui.format.formatted
+import com.danielchi0716.resume.core.ui.utils.formatted
 
 @Composable
 fun MoreScreen() {
@@ -193,10 +193,7 @@ private fun SideProjectCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     val locale = LocalConfiguration.current.locales[0]
-                    TinyChip(
-                        text = "${project.period.start.formatted(locale)} ─ " +
-                            (project.period.end?.formatted(locale) ?: stringResource(R.string.period_present)),
-                    )
+                    TinyChip(text = project.period.formatted(locale))
                 }
                 Icon(
                     imageVector = Icons.Filled.ExpandMore,

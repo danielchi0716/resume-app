@@ -36,9 +36,6 @@
 
     <!-- Period & duration -->
     <string name="period_present">至今</string>
-    <string name="duration_years_months">%1$d 年 %2$d 個月</string>
-    <string name="duration_years">%1$d 年</string>
-    <string name="duration_months">%1$d 個月</string>
 
     <!-- Skills -->
     <string name="filter_all">全部</string>
