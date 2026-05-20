@@ -570,10 +570,6 @@ html[lang="zh-Hant"] .about-content p {
 }
 
 /* Print styles */
-.page-break-before {
-  page-break-before: always;
-}
-
 .section-title {
   page-break-after: avoid;
 }
