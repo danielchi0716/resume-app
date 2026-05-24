@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ResumeCore</string>
+    <string name="app_name">紀賀元履歷</string>
 
     <!-- Bottom navigation -->
     <string name="tab_profile">個人</string>
